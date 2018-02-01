@@ -1,0 +1,39 @@
+pipeline:
+  build_and_deploy_code:
+    image: maven
+    privileged: true
+    when:
+      branch: [master, develop]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    secrets: [ access_key, access_key_id ]
+    commands:
+      - ./build-deploy.sh
+  build_docker_image:
+    image: docker:stable-dind
+    privileged: true
+    when:
+      branch: [master, develop, develop-drone, EGAR-724]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - apk update
+      - apk add libxml2-utils
+      - ./docker-build.sh egar-workflow-api
+  notify_slack:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/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
+    channel: builds
+    when:
+      status: [success, failure]
+  deploy_docker_image:
+    image: docker:stable-dind
+    privileged: true
+    when:
+      branch: [master, develop, develop-drone, EGAR-724]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - apk update
+      - apk add libxml2-utils
+      - ./docker-deploy.sh egar-workflow-api

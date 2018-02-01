@@ -1,0 +1,9 @@
+{
+  "hazardous": false,
+  "responsible_person": {
+    "address": "123 ABC",
+    "contact_number": "01234567890",
+    "name": "Samantha",
+    "type": "CAPTAIN"
+  }
+}

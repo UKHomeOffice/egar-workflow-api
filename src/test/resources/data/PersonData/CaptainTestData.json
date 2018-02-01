@@ -1,0 +1,16 @@
+{
+  "details": {
+    "address": "76 ABC",
+    "dob": "2017-11-16",
+    "document_expiryDate": "2035-11-16",
+    "document_issuingCountry": "UK",
+    "document_no": "3533DGDTW63G33",
+    "document_type": "PASSPORT",
+    "family_name": "Bloggs",
+    "gender": "MALE",
+    "given_name": "Jhon",
+    "nationality": "UK",
+    "place": "London"
+  },
+  "type": "CAPTAIN"
+}

@@ -1,0 +1,44 @@
+image: maven:3.3.9
+
+pipelines:
+  branches:
+    master:
+      - step:
+          name: Build Only
+          caches:
+            - maven
+          script: 
+            - mvn -B compile 
+      - step:
+          name: Test
+          caches:
+            - maven
+          script: 
+            - mvn -B test 
+      - step:
+          name: Deploy to S3
+          caches:
+            - maven
+          script: 
+            - mvn -B deploy -DskipTests
+                   
+    develop:
+      - step:
+          name: Build Only
+          caches:
+            - maven
+          script: 
+            - mvn -B compile 
+# Skipping tests --- TEMPORARY HACK 
+#      - step:
+#          name: Test
+#          caches:
+#            - maven
+#          script: 
+#            - mvn -B test 
+      - step:
+          name: Deploy to S3
+          caches:
+            - maven
+          script: 
+            - mvn -B deploy -DskipTests
