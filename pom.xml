@@ -172,7 +172,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<repository>egar/${project.artifactId}</repository>
+					<repository>${project.artifactId}</repository>
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
@@ -180,16 +180,9 @@
 			</plugin>
 			<!-- Docker build : end -->
 		</plugins>
-		<extensions>
-			<extension>
-				<groupId>org.springframework.build</groupId>
-				<artifactId>aws-maven</artifactId>
-				<version>5.0.0.RELEASE</version>
-			</extension>
-		</extensions>
 	</build>
 
 	<name>eGAR Workflow API application</name>
 	<description>The workflow API which is consumed by the website.</description>
-	<version>4.2.4</version>
+	<version>4.2.5</version>
 </project>
