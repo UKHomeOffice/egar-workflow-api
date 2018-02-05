@@ -1,0 +1,74 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.4.0 (c7964e7)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: workflow-api
+  name: workflow-api
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: workflow-api
+    spec:
+      containers:
+      - args:
+        - --workflow.egar.gar.api.url=http://$(GAR_API_SERVICE_HOST):$(GAR_API_SERVICE_PORT)/api/v1/GARs/
+        - --workflow.egar.submission.api.url=http://$(SUBMISSION_API_SERVICE_HOST):$(SUBMISSION_API_SERVICE_PORT)/api/v1/Submission/
+        - --workflow.egar.location.api.url=http://$(LOCATION_API_SERVICE_HOST):$(LOCATION_API_SERVICE_PORT)/api/v1/locations/
+        - --workflow.egar.person.api.url=http://$(PERSON_API_SERVICE_HOST):$(PERSON_API_SERVICE_PORT)/api/v1/persons/
+        - --workflow.egar.aircraft.api.url=http://$(AIRCRAFT_API_SERVICE_HOST):$(AIRCRAFT_API_SERVICE_PORT)/api/v1/aircraft/
+        - --spring.profiles.active=mock-attribute,mock-file
+        image: pipe.egarteam.co.uk/egar-workflow-api:$WORKFLOW_API_VER
+        name: workflow-api
+        livenessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          httpGet:
+            path: /health
+            port: 9090
+        resources: {}
+      - args:
+        - --discovery-url=http://key.egarteam.co.uk:9090/auth/realms/egar
+        - --client-id=$(CLIENT_ID)
+        - --client-secret=$(CLIENT_SECRET)
+        - --listen=0.0.0.0:8010
+        - --encryption-key=$(ENCRYPT_KEY)
+        - --upstream-url=http://localhost:9090
+        - --resources=uri=/api/*|roles=uma_authorization
+        - --secure-cookie=false
+        - --enable-logging=true
+        - --no-redirects=true
+        - --upstream-response-header-timeout=50s
+        - --upstream-timeout=50s
+        - --upstream-keepalive-timeout=50s
+        - --upstream-expect-continue-timeout=50s
+        - --add-claims=email
+        env:
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: egar-secret
+                key: clientid
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: egar-secret
+                key: clientsecret
+          - name: ENCRYPT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: egar-secret
+                key: enckey
+        image: quay.io/gambol99/keycloak-proxy
+        name: workflow-api-proxy
+        resources: {}
+      restartPolicy: Always
+status: {}
+
