@@ -35,5 +35,3 @@ pipeline:
       - kube_token
     commands:
       - ./acp-deploy.sh
-    when:
-      event: deployment
