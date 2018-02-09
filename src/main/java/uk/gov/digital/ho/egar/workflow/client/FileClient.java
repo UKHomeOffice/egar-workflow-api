@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.egar.workflow.client;
 
+import java.util.List;
 import java.util.UUID;
 
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
@@ -14,5 +15,8 @@ public interface FileClient extends DataClient<FileClient>{
 
 	FileWithIdResponse retrieveFileDetails(final AuthValues authValues, 
 							   			   final UUID fileUuid) throws WorkflowException;
+
+	List<FileWithIdResponse> getBulk(final AuthValues authValues,
+										   final List<UUID> fileUuids) throws WorkflowException;
 
 }

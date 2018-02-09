@@ -3,8 +3,12 @@ package uk.gov.digital.ho.egar.workflow.service;
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.Person;
+import uk.gov.digital.ho.egar.workflow.model.rest.PersonWithId;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PeopleBulkResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PeopleSkeletonResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PersonResponse;
+
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -28,7 +32,7 @@ public interface PersonService {
      * @return The person with an id.
      * @throws WorkflowException 
      */
-    UUID addNewPerson(final AuthValues authToken, final UUID garId, final Person person) throws WorkflowException;
+    UUID addNewPerson(final AuthValues authToken, final UUID garId, final PersonWithId person) throws WorkflowException;
 
     /**
      * Updates an existing person on an existing gar
@@ -55,4 +59,14 @@ public interface PersonService {
      * @throws WorkflowException 
      */
     PersonResponse getPerson(final AuthValues authToken, final UUID garId, final UUID personId) throws WorkflowException;
+
+    /**
+     * Bulk retrieve people for user
+     * @param authValues
+     * @param peopleList list of people uuids
+     * @return list of person details
+     * @throws WorkflowException 
+     */
+	PeopleBulkResponse getBulkPeople(final AuthValues authValues, final List<UUID> peopleUuids) throws WorkflowException;
+
 }

@@ -385,6 +385,8 @@ public class TestDependacies {
 	}
 	
 	public static enum PersonType{
+		INVALID("Invalid"),
+		EMPTY_PASSENGER("EmptyPassenger"),
 		CAPTAIN("Captain"),
 		CREW("Crew"),
 		PASSENGER("Passenger");

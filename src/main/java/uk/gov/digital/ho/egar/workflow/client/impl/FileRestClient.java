@@ -1,7 +1,10 @@
 package uk.gov.digital.ho.egar.workflow.client.impl;
 
 import static uk.gov.digital.ho.egar.constants.ServicePathConstants.ROOT_PATH_SEPERATOR;
+import static uk.gov.digital.ho.egar.workflow.api.WorkflowApi.PATH_BULK;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -9,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -22,9 +23,7 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.UnableToPerformWorkflowExc
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.FileClient;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientFileDetails;
-import uk.gov.digital.ho.egar.workflow.client.model.ClientFileInformation;
 import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
-import uk.gov.digital.ho.egar.workflow.model.rest.FileDetails;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileInformation;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.FileWithIdResponse;
 
@@ -78,5 +77,25 @@ public class FileRestClient  extends RestClient<FileClient> implements FileClien
 		if ( logger.isInfoEnabled()) logger.info("ResponseBody", response.getBody());
 		
 		return conversionService.convert(response.getBody(), FileWithIdResponse.class);
+	}
+
+	@Override
+	public List<FileWithIdResponse> getBulk(AuthValues authValues, List<UUID> fileUuids) throws WorkflowException {
+		logger.info("Request to retrieve list of people.");
+
+		ResponseEntity<ClientFileDetails[]> responseArray = doPost(authValues, PATH_BULK, fileUuids,ClientFileDetails[].class  );
+		
+		if (!HttpStatus.OK.equals(responseArray.getStatusCode()))
+			throw new UnableToPerformWorkflowException(responseArray);
+		
+		List<ClientFileDetails> responseList = Arrays.asList(responseArray.getBody());
+
+		TypeDescriptor sourceType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(ClientFileDetails.class));
+		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(FileWithIdResponse.class));
+
+		// Suppressing warning due to using type descriptor within conversion service
+		@SuppressWarnings("unchecked")
+		List<FileWithIdResponse> result = (List<FileWithIdResponse>) conversionService.convert(responseList,sourceType,targetType);
+		return result;
 	}
 }

@@ -16,8 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 										+ "mock-person,"
 										+ "mock-file,"
 										+ "mock-submission,"
-										+ "mock-aircraft,"
-										+ "mock-attribute "
+										+ "mock-aircraft"
 })
 @AutoConfigureMockMvc
 public class LocationControllerMockingTests extends LocationControllerTest {

@@ -2,6 +2,10 @@ package uk.gov.digital.ho.egar.workflow.client.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +22,7 @@ import uk.gov.digital.ho.egar.workflow.client.model.submission.SubmissionPoint;
 import uk.gov.digital.ho.egar.workflow.client.model.submission.SubmissionResponsiblePersonDetails;
 import uk.gov.digital.ho.egar.workflow.client.model.submission.SubmissionResponsiblePersonType;
 import uk.gov.digital.ho.egar.workflow.model.rest.Attribute;
+import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
 import uk.gov.digital.ho.egar.workflow.model.rest.PersonDetails;
 import uk.gov.digital.ho.egar.workflow.model.rest.Point;
 import uk.gov.digital.ho.egar.workflow.model.rest.ResponsiblePersonDetails;
@@ -99,19 +104,12 @@ public class GarSummaryToClientSubmissionConverter implements Converter<GarSumma
 		/*
 		 * Converting files //FIXME not yet implemented
 		 */
-//		List<SubmissionFiles> targetFiles = null;
 
-		// List<GarFileWithId> sourceFiles = source.getFiles();
-		// List<SubmissionFiles> targetFiles= new ArrayList<>();
-		// for(GarFileWithId file : sourceFiles){
-		// if(file!=null){
-		// SubmissionFiles newFile = fileConverter(file);
-		// targetFiles.add(newFile);
-		// }else{
-		// targetFiles.add(null);
-		// }
-		//
-		// }
+		List<SubmissionFiles> targetFiles = source.getFiles().stream()
+				.filter(Objects::nonNull)
+				.map(file->fileConverter(file))
+				.collect(Collectors.toList());
+	
 
 		/*
 		 * Converting attributes
@@ -129,7 +127,7 @@ public class GarSummaryToClientSubmissionConverter implements Converter<GarSumma
 		target.setAircraft(targetAircraft);
 		target.setLocation(targetLocation);
 		target.setPeople(targetPeople);
-		//target.setFiles(targetFiles);//FIXME not yet implemented
+		target.setFiles(targetFiles);
 		target.setAttributes(targetAttributes);
 
 		return target;
@@ -193,13 +191,13 @@ public class GarSummaryToClientSubmissionConverter implements Converter<GarSumma
 		return targetPerson;
 	}
 
-	// TODO
-	@SuppressWarnings("unused")
 	private SubmissionFiles fileConverter(FileWithIdResponse source) {
 		SubmissionFiles target = new SubmissionFiles();
-
+		
+		target.setFileLink(source.getFileLink());
 		target.setFileName(source.getFileName());
-		target.setUploadComplete(false);// FIXME
+		target.setFileUuid(source.getFileUuid());
+		target.setUploadComplete(source.getFileStatus() == FileStatus.VIRUS_SCANNED);
 
 		return target;
 

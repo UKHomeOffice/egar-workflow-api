@@ -34,11 +34,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -50,25 +46,12 @@ import uk.co.civica.microservice.util.testing.utils.ConditionalIgnoreRule.Condit
 import uk.gov.digital.ho.egar.workflow.WorkflowApplication;
 import uk.gov.digital.ho.egar.workflow.client.FileClient;
 import uk.gov.digital.ho.egar.workflow.client.FileInfoClient;
+import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileClientImpl;
 import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileInfoClientImpl;
 import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
+import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(properties
-		={
-				"eureka.client.enabled=false",
-				"spring.cloud.config.discovery.enabled=false",
-				"spring.profiles.active=dev,"
-						+ "mock-gar,"
-						+ "mock-location,"
-						+ "mock-person,"
-						+ "mock-submission,"
-						+ "mock-aircraft,"
-						+ "mock-attribute,"
-						+ "mock-file"
-})
-@AutoConfigureMockMvc
-public class FileControllerTest {//abstract
+public abstract class FileControllerTest {
 	
 	@Rule
 	public ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
@@ -81,10 +64,10 @@ public class FileControllerTest {//abstract
     private WorkflowPropertiesConfig config;
 
 	@Autowired
-	private FileClient fileClient;
-
-	@Autowired
 	private FileInfoClient fileInfoClient;
+	
+	@Autowired
+	private FileClient fileClient;
 
 
 	private TestDependacies retriever ;
@@ -99,6 +82,7 @@ public class FileControllerTest {//abstract
 	public void setup(){
 		final long fileSize = 131072;
 		setFileSize(fileSize);
+		setFileStatus(FileStatus.AWAITING_VIRUS_SCAN);
 	}
 
 	@Test
@@ -172,7 +156,7 @@ public class FileControllerTest {//abstract
 				.header(AUTH_HEADER,   AUTH))
 		.andDo(print())
 		// THEN
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 	@Ignore // TODO When Authentication added
 	@Test
@@ -492,7 +476,7 @@ public class FileControllerTest {//abstract
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
 				.content(TestDependacies.fileTestData()))
 		// THEN
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 	//TODO When Authentication is added
 	@Ignore
@@ -642,6 +626,12 @@ public class FileControllerTest {//abstract
 	private void setFileSize(long fileSize){
 		if (fileInfoClient instanceof DummyFileInfoClientImpl){
 			((DummyFileInfoClientImpl)fileInfoClient).setFileSize(fileSize);
+		}
+	}
+
+	private void setFileStatus(FileStatus fileStatus){
+		if (fileClient instanceof DummyFileClientImpl){
+			((DummyFileClientImpl)fileClient).setFileStatus(fileStatus);
 		}
 	}
 }

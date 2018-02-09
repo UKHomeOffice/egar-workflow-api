@@ -9,14 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.Info.Builder;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -44,7 +42,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
  * This class abstracts the posting of the Auth values to the standard rest template.
  * @param <T> The interface class this service will 'have'.
  */
-public abstract class RestClient<T extends DataClient<?>> implements RestDataClient<T>,HealthIndicator,InfoContributor  {
+public abstract class RestClient<T extends DataClient<?>> implements RestDataClient<T>,InfoContributor  {
 
 	/**
 	 * slf4j logger.
@@ -237,7 +235,7 @@ public abstract class RestClient<T extends DataClient<?>> implements RestDataCli
     public Health health() {
 		return DownstreamHealthIndicator.fetchHealth(getRestTemplate(), getEndpointServerRootUrl());
 	}
-
+	
    @Override
    public void contribute(Builder builder) {	   
 	   detailBuilder.withDetail(this,builder);

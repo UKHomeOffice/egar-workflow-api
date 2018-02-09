@@ -13,7 +13,6 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.GarClient;
 import uk.gov.digital.ho.egar.workflow.client.SubmissionClient;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
-import uk.gov.digital.ho.egar.workflow.model.rest.SubmissionStatus;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.FileWithIdResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSkeleton;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSummary;
@@ -62,7 +61,7 @@ public class SubmissionBusinessLogicService implements SubmissionService {
         
         garChecker.checkGarExists(gar, garUuid);
 		garChecker.checkGarIsAmendable(userValues, gar);
-
+		garChecker.checkGarIsSubmittable(userValues, gar);
 		
 		GarSummary summary = garBusinessLogicService.getGarSummary(userValues, garUuid);
 		

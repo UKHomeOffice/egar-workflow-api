@@ -5,6 +5,7 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.Aircraft;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.AircraftWithId;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface AircraftClient extends DataClient<AircraftClient> {
@@ -14,4 +15,6 @@ public interface AircraftClient extends DataClient<AircraftClient> {
     AircraftWithId updateAircraft(final AuthValues authToken, UUID aircraftId, Aircraft aircraft) throws WorkflowException;
 
     AircraftWithId retrieveAircraft(final AuthValues authToken, UUID aircraftId) throws WorkflowException;
+
+	List<AircraftWithId> getBulk(final AuthValues authValues, final List<UUID> aircraftUuids) throws WorkflowException;
 }

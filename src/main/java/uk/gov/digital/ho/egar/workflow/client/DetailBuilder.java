@@ -42,11 +42,13 @@ public class DetailBuilder {
 			ObjectNode restInfoNode = mapper.createObjectNode();
 			infoNode.set("rest", restInfoNode );
 			
-			RestDataClient restDataClient = (RestDataClient) dataClient;
+			RestDataClient<?> restDataClient = (RestDataClient<?>) dataClient;
 			URL baseUrl = restDataClient.getBaseEndpointUrl();
+			URL serverUrl = restDataClient.getEndpointServerRootUrl();
 			restInfoNode.put("url", baseUrl.toString());
-
-			JsonNode downstreamHealth = DownstreamHealthIndicator.fetchRawHealth(restDataClient.getRestTemplate(),restDataClient.getEndpointServerRootUrl());
+			restInfoNode.put("url-server", serverUrl.toString() );
+			
+			JsonNode downstreamHealth = DownstreamHealthIndicator.fetchRawHealth(restDataClient.getRestTemplate(),serverUrl);
 
 			if (downstreamHealth == null) {
 				restInfoNode.put("accessable", "NO");

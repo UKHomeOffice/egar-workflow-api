@@ -3,7 +3,6 @@ package uk.gov.digital.ho.egar.workflow.client.adapter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientPerson;
-import uk.gov.digital.ho.egar.workflow.client.model.ClientPersonType;
 import uk.gov.digital.ho.egar.workflow.model.rest.Person;
 import uk.gov.digital.ho.egar.workflow.model.rest.PersonDetails;
 
@@ -29,7 +28,6 @@ public class PersonToClientPersonConverter implements Converter<Person, ClientPe
         target.setGender(innerSource.getGender());
         target.setNationality(innerSource.getNationality());
         target.setPlace(innerSource.getPlace());
-        
         return target;
     }
 }

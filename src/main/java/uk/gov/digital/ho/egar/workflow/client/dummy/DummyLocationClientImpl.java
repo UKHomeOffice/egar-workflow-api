@@ -1,6 +1,8 @@
 package uk.gov.digital.ho.egar.workflow.client.dummy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -69,6 +71,20 @@ public class DummyLocationClientImpl extends DummyClient<LocationClient>
         return conversionService.convert(clientLocation, LocationWithId.class);
     }
 	
+	@Override
+	public List<LocationWithId> getBulk(AuthValues authValues, List<UUID> locationUuids) {
+
+		List<LocationWithId>  locations = new ArrayList<>();
+		for(UUID locationUuid: locationUuids){
+			DummyKey key = new DummyKey(locationUuid, authValues.getUserUuid());
+		    ClientLocation clientLocation = dummyLocationRepo.get(key);
+		    LocationWithId location = conversionService.convert(clientLocation, LocationWithId.class);
+	    
+		    locations.add(location);
+		}
+		return locations;
+	}
+	
 	private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 	private final Validator validator = factory.getValidator();
 	
@@ -99,6 +115,8 @@ public class DummyLocationClientImpl extends DummyClient<LocationClient>
 		
 		return sb.toString();
 	}
+
+	
 
 
 }

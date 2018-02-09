@@ -26,4 +26,9 @@ public class PersonNotFoundWorkflowException extends DataNotFoundWorkflowExcepti
 		super(String.format("Can not find person in gar %s", garId.toString()));
 	}
 	
+	public PersonNotFoundWorkflowException(final String message)
+	{
+		super(message);
+	}
+	
 }

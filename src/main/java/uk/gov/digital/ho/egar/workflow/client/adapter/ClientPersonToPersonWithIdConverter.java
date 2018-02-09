@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import uk.gov.digital.ho.egar.workflow.client.model.ClientPerson;
 import uk.gov.digital.ho.egar.workflow.model.rest.PersonDetails;
-import uk.gov.digital.ho.egar.workflow.model.rest.PersonType;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PersonWithIdResponse;
 
 @Component

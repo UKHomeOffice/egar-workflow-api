@@ -1,11 +1,13 @@
 package uk.gov.digital.ho.egar.workflow.api.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.isNull;
+import static com.jayway.jsonassert.JsonAssert.with;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,6 +34,7 @@ import static uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies.USER_UUID
 import static uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies.PersonType.CAPTAIN;
 import static uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies.PersonType.CREW;
 import static uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies.PersonType.PASSENGER;
+import static uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies.PersonType.INVALID;
 
 import java.util.UUID;
 
@@ -43,6 +46,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -144,7 +148,7 @@ public abstract class PersonControllerTest{
 				.header(AUTH_HEADER,   AUTH))
 		.andDo(print())
 		// THEN
-		.andExpect(status().isBadRequest());	
+		.andExpect(status().isForbidden());	
 	}
 
 	@Ignore // TODO When Authentication added
@@ -504,7 +508,7 @@ public abstract class PersonControllerTest{
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
 				.content(TestDependacies.personTestData(CAPTAIN)))
 		// THEN
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	@Ignore // TODO When Authentication added
@@ -576,7 +580,7 @@ public abstract class PersonControllerTest{
 		assertEquals(personResponse.get("person").get("details").get("address").asText(), 					"76 ABC");
 		assertEquals(personResponse.get("person").get("details").get("dob").asText(), 						"2017-11-16");
 		assertEquals(personResponse.get("person").get("details").get("document_expiryDate").asText(), 		"2017-11-16");
-		assertEquals(personResponse.get("person").get("details").get("document_issuingCountry").asText(), 	"uk");
+		assertEquals(personResponse.get("person").get("details").get("document_issuingCountry").asText(), 	"UK");
 		assertEquals(personResponse.get("person").get("details").get("document_no").asText(), 				"3533DGDTW63G33");
 		assertEquals(personResponse.get("person").get("details").get("document_type").asText(), 			"PASSPORT");
 		assertEquals(personResponse.get("person").get("details").get("family_name").asText(), 				"Bloggs");
@@ -733,4 +737,84 @@ public abstract class PersonControllerTest{
 				.header(AUTH_HEADER,   AUTH))
 		.andExpect(status().isUnauthorized());
 	}
+	
+	//----------------------------------------------------------------------------------------------------------
+	
+	@Test
+	public void successfullyAddExistingPersonToGar() throws Exception{
+		// WITH
+		//ADD person to gar for user
+		String garUuid =retriever.createAGar(USER_UUID, AUTH);
+		MvcResult result =
+				this.mockMvc
+				.perform(post(PERSON_SERVICE_NAME.replace("{gar_uuid}", garUuid))
+						.header(USERID_HEADER, USER_UUID)
+						.header(AUTH_HEADER,   AUTH)
+						.contentType(APPLICATION_JSON_UTF8_VALUE)
+						.content(TestDependacies.personTestData(CAPTAIN)))
+				.andExpect(status().isSeeOther())
+				.andExpect(header().string("Location", not(isNull())))
+				.andExpect(header().string("Location",startsWith(PERSON_SERVICE_NAME.replace("{gar_uuid}", garUuid))))
+				.andReturn();
+		String captainUri = result.getResponse().getHeader("Location");
+		String uuid = captainUri.substring(PERSON_SERVICE_NAME.replace("{gar_uuid}", garUuid).length(), captainUri.length()-1);
+		
+
+		String json = "{\"person_uuid\": \"{UUID}\", \"type\": \"captain\"}";
+		//WHEN
+		// add same person to another gar
+		String newGarUuid =retriever.createAGar(USER_UUID, AUTH);
+		this.mockMvc
+		.perform(post(PERSON_SERVICE_NAME.replace("{gar_uuid}", newGarUuid))
+				.header(USERID_HEADER, USER_UUID)
+				.header(AUTH_HEADER,   AUTH)
+				.contentType(APPLICATION_JSON_UTF8_VALUE)
+				.content(json.replace("{UUID}", uuid)))
+		// THEN
+		.andExpect(status().isSeeOther())
+		.andExpect(header().string("Location", not(isNull())))
+		.andExpect(header().string("Location",startsWith(PERSON_SERVICE_NAME.replace("{gar_uuid}", newGarUuid))))
+		;
+	}
+
+	@Test
+	public void BadRequestAddingPersonWithDetailsAndIdToGar() throws Exception{
+		// WITH
+		String garUuid =retriever.createAGar(USER_UUID, AUTH);
+		// WHEN
+		MvcResult result =
+		this.mockMvc
+		.perform(post(PERSON_SERVICE_NAME.replace("{gar_uuid}", garUuid))
+				.header(USERID_HEADER, USER_UUID)
+				.header(AUTH_HEADER,   AUTH)
+				.contentType(APPLICATION_JSON_UTF8_VALUE)
+				.content(TestDependacies.personTestData(INVALID)))
+		// THEN
+		.andExpect(status().isBadRequest())
+		.andReturn();
+		
+		String response = result.getResponse().getContentAsString();
+
+	    with(response).assertThat("$.message[0]", is("personWithId: Person must only have one: UUID or Details"));
+		
+		;
+	}
+
+	@Test
+	public void BadRequestAddingRandomIdToGar() throws Exception{
+		// WITH
+		String garUuid =retriever.createAGar(USER_UUID, AUTH);
+		String json = "{\"person_uuid\": \"{UUID}\", \"type\": \"CREW\"}";
+		// WHEN
+		this.mockMvc
+		.perform(post(PERSON_SERVICE_NAME.replace("{gar_uuid}", garUuid))
+				.header(USERID_HEADER, USER_UUID)
+				.header(AUTH_HEADER,   AUTH)
+				.contentType(APPLICATION_JSON_UTF8_VALUE)
+				.content(json.replace("{UUID}", UUID.randomUUID().toString())))
+		// THEN
+		.andExpect(status().isBadRequest())
+		;
+	}
+
 }

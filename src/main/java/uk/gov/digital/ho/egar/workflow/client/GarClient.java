@@ -2,9 +2,10 @@ package uk.gov.digital.ho.egar.workflow.client;
 
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
-import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSkeleton;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface GarClient  extends DataClient<GarClient> {
@@ -23,5 +24,7 @@ public interface GarClient  extends DataClient<GarClient> {
     @Deprecated
     boolean containsGar(final AuthValues authToken, UUID garId)throws WorkflowException ;
 
-    GarListResponse getListOfGars(final AuthValues authToken)throws WorkflowException;
+    GarList getListOfGars(final AuthValues authToken)throws WorkflowException;
+
+    List<GarSkeleton> getBulk(final AuthValues authValues, final List<UUID> garUuids) throws WorkflowException;
 }

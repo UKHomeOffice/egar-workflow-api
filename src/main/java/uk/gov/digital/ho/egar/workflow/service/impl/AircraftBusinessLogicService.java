@@ -72,8 +72,6 @@ public class AircraftBusinessLogicService implements AircraftService {
         response.setUserUuid(gar.getUserUuid());
 
         return response;
-	} 
-	
-	
+	}
 	
 }

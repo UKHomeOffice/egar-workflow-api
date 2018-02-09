@@ -1,9 +1,10 @@
 package uk.gov.digital.ho.egar.workflow.client.dummy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +34,14 @@ public class DummyAircraftClientImpl extends DummyClient<AircraftClient>
     private ConversionService conversionService;
 
     @Override
-    public AircraftWithId createAircraft(final AuthValues authToken, final Aircraft aircraft) throws WorkflowException {
+    public AircraftWithId createAircraft(final AuthValues authValues, final Aircraft aircraft) throws WorkflowException {
     	
     	logger.info("TESTING");
 
         ClientAircraft clientAircraft = conversionService.convert(aircraft, ClientAircraft.class);
 
         clientAircraft.setAircraftUuid(UUID.randomUUID());
-        clientAircraft.setUserUuid(authToken.getUserUuid());
+        clientAircraft.setUserUuid(authValues.getUserUuid());
 
         clientAircraft = add(clientAircraft);
 
@@ -48,12 +49,12 @@ public class DummyAircraftClientImpl extends DummyClient<AircraftClient>
     }
 
     @Override
-    public AircraftWithId updateAircraft(final AuthValues authToken, final UUID aircraftId, final Aircraft aircraft) throws WorkflowException{
+    public AircraftWithId updateAircraft(final AuthValues authValues, final UUID aircraftId, final Aircraft aircraft) throws WorkflowException{
 
         ClientAircraft clientAircraft = conversionService.convert(aircraft, ClientAircraft.class);
 
         clientAircraft.setAircraftUuid(aircraftId);
-        clientAircraft.setUserUuid(authToken.getUserUuid());
+        clientAircraft.setUserUuid(authValues.getUserUuid());
         add(clientAircraft);
 
         return conversionService.convert(clientAircraft, AircraftWithId.class);
@@ -61,18 +62,34 @@ public class DummyAircraftClientImpl extends DummyClient<AircraftClient>
 
 
 	@Override
-    public AircraftWithId retrieveAircraft(final AuthValues authToken, final UUID aircraftId) throws WorkflowException{
+    public AircraftWithId retrieveAircraft(final AuthValues authValues, final UUID aircraftId) throws WorkflowException{
 
-		DummyKey key = new DummyKey(aircraftId,authToken.getUserUuid());
+		DummyKey key = new DummyKey(aircraftId,authValues.getUserUuid());
 		
         ClientAircraft clientAircraft = dummyAircraftRepo.get(key);
         return conversionService.convert(clientAircraft, AircraftWithId.class);
+	}
+	
+	@Override
+	public List<AircraftWithId> getBulk(AuthValues authValues, List<UUID> aircraftUuids) {
+		
+		List<AircraftWithId> aircrafts = new ArrayList<>();
+		for(UUID aircraftUuid: aircraftUuids){
+			DummyKey key = new DummyKey(aircraftUuid,authValues.getUserUuid());
+			ClientAircraft clientAircraft = dummyAircraftRepo.get(key);
+			AircraftWithId aircraft = conversionService.convert(clientAircraft, AircraftWithId.class);
+			
+			aircrafts.add(aircraft);
+		}
+		return aircrafts;
 	}
 
     private ClientAircraft add(final ClientAircraft aircraft) {
         dummyAircraftRepo.put(new DummyKey(aircraft.getAircraftUuid(),aircraft.getUserUuid()), aircraft);
         return aircraft;
     }
+
+	
     
 
 

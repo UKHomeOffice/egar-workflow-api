@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.FileInfoClient;
+import uk.gov.digital.ho.egar.workflow.client.model.ClientFileStatus;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileDetails;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileInformation;
+import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
 
 
 @Component
@@ -26,7 +28,7 @@ public class DummyFileInfoClientImpl extends DummyClient<FileInfoClient> impleme
 		String[] parts = fileDetails.getFileLink().split("[\\/\\\\]");
 		fileInfo.setFileName(parts[parts.length-1]);
 		fileInfo.setFileSize(fileSize);
-		
+
 		return fileInfo;
 	}
 

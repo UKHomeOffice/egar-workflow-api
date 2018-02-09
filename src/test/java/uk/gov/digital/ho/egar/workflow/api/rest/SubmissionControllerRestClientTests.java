@@ -31,7 +31,8 @@ import uk.co.civica.microservice.util.testing.utils.ConditionalIgnoreRule.Condit
 										+ "mock-file,"
 										+ "mock-aircraft,"
 										+ "mock-attribute ",
-		"workflow.cancellation.cutoff.time.ms=7200000"
+		"workflow.cancellation.arrival.threshold.time.s=7200",
+		"workflow.submission.arrival.cutoff.time.s=-10800"
 })
 @AutoConfigureMockMvc
 @ConditionalIgnore( condition = IgnoreWhenNoRestClients.class )

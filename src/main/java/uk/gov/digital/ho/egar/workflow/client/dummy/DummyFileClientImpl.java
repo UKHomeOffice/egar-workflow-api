@@ -1,6 +1,8 @@
 package uk.gov.digital.ho.egar.workflow.client.dummy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ import uk.gov.digital.ho.egar.workflow.client.FileClient;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientFileDetails;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientFileStatus;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileInformation;
+import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.FileWithIdResponse;
 
 
@@ -28,13 +31,16 @@ public class DummyFileClientImpl extends DummyClient<FileClient> implements File
 	@Autowired
 	private ConversionService conversionService;
 
+	private ClientFileStatus status = ClientFileStatus.AWAITING_VIRUS_SCAN;
+
 	@Override
 	public FileWithIdResponse uploadFileInformation(AuthValues authValues,
 													FileInformation fileInfo) throws WorkflowException {
 		
 		ClientFileDetails clientFile = conversionService.convert(fileInfo, ClientFileDetails.class);
 		
-		clientFile.setFileStatus(ClientFileStatus.AWAITING_VIRUS_SCAN);
+		
+		clientFile.setFileStatus(status);
 		clientFile.setFileUuid(UUID.randomUUID());
 		clientFile.setUserUuid(authValues.getUserUuid());
 
@@ -54,9 +60,27 @@ public class DummyFileClientImpl extends DummyClient<FileClient> implements File
 		return conversionService.convert(clientResponse, FileWithIdResponse.class);
 	}
 	
+	@Override
+	public List<FileWithIdResponse> getBulk(AuthValues authValues, List<UUID> fileUuids) {
+		
+		List<FileWithIdResponse> files = new ArrayList<>();
+		for(UUID fileUuid: fileUuids){
+			DummyKey key = new DummyKey(fileUuid,authValues.getUserUuid());
+			ClientFileDetails clientResponse = dummyFileRepo.get(key);
+			FileWithIdResponse file = conversionService.convert(clientResponse, FileWithIdResponse.class);
+			
+			files.add(file);
+		}
+		return files;
+	}
+	
 	private ClientFileDetails add(final ClientFileDetails clientFile) {
 		dummyFileRepo.put(new DummyKey(clientFile.getFileUuid(), clientFile.getUserUuid()), clientFile);
 		return clientFile;
+	}
+
+	public void setFileStatus(FileStatus fileStatus) {
+		this.status=ClientFileStatus.valueOf(fileStatus.toString());
 	}
 
 }

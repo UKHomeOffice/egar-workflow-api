@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.egar.workflow.client.model;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -9,6 +9,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
@@ -17,7 +21,9 @@ import uk.gov.digital.ho.egar.workflow.api.WorkflowApi;
 import uk.gov.digital.ho.egar.workflow.api.WorkflowApiResponse;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.GarNotFoundWorkflowException;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
+import uk.gov.digital.ho.egar.workflow.model.rest.ApiErrors;
 import uk.gov.digital.ho.egar.workflow.model.rest.Person;
+import uk.gov.digital.ho.egar.workflow.model.rest.PersonWithId;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PeopleSkeletonResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PersonResponse;
 import uk.gov.digital.ho.egar.workflow.service.PersonService;
@@ -26,6 +32,7 @@ import uk.gov.digital.ho.egar.workflow.utils.UriLocationUtilities;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.egar.workflow.api.WorkflowApi.PATH_PERSON_IDENTIFIER;
@@ -102,7 +109,7 @@ public class PersonController implements PersonRestService {
     public ResponseEntity<Void> addNewPerson(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
     		@RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser,
     		@PathVariable(value = GAR_IDENTIFIER) UUID garId, 
-    		@Valid @RequestBody Person person) throws WorkflowException {
+    		@Valid @RequestBody PersonWithId person) throws WorkflowException {
         UUID personId = personService.addNewPerson(new AuthValues(authToken, uuidOfUser), garId, person);
 
         //Creating the redirection location URI
@@ -210,6 +217,17 @@ public class PersonController implements PersonRestService {
         personService.deletePerson(new AuthValues(authToken, uuidOfUser), garId, personId);
         return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
     }
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ApiErrors processValidationError(MethodArgumentNotValidException ex) {
+      BindingResult result = ex.getBindingResult();
+      List<FieldError> fieldErrors = result.getFieldErrors();
+      List<ObjectError> globalErrors = result.getGlobalErrors();   
+      return new ApiErrors().addFieldErrors(fieldErrors).addObjectErrors(globalErrors) ;
+    }
+    
 
 }
 

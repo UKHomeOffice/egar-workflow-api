@@ -28,8 +28,7 @@ import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
 										+ "mock-location,"
 										+ "mock-person,"
 										+ "mock-file,"
-										+ "mock-submission,"
-										+ "mock-attribute "
+										+ "mock-submission"
 
 })
 @AutoConfigureMockMvc

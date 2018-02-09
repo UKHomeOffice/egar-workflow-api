@@ -15,11 +15,14 @@ import uk.gov.digital.ho.egar.workflow.client.GarClient;
 import uk.gov.digital.ho.egar.workflow.client.PersonClient;
 import uk.gov.digital.ho.egar.workflow.model.rest.Person;
 import uk.gov.digital.ho.egar.workflow.model.rest.PersonType;
+import uk.gov.digital.ho.egar.workflow.model.rest.PersonWithId;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PeopleBulkResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.*;
 import uk.gov.digital.ho.egar.workflow.service.PersonService;
 import uk.gov.digital.ho.egar.workflow.service.behaviour.GarChecker;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -53,7 +56,7 @@ public class PersonBusinessLogicService implements PersonService {
     }
 
     @Override
-    public UUID addNewPerson(final AuthValues authValues, UUID garUuid, Person person) throws WorkflowException {
+    public UUID addNewPerson(final AuthValues authValues, UUID garUuid, PersonWithId person) throws WorkflowException {
         
         GarSkeleton gar = garClient.getGar(authValues, garUuid);
        
@@ -67,8 +70,13 @@ public class PersonBusinessLogicService implements PersonService {
                 gar.getPeople().getCaptain() != null) {
             throw new CaptainAlreadyExistsWorkflowException(garUuid);
         }
-
-        PersonWithIdResponse personWithId = personClient.createPerson(authValues, person);
+        
+        PersonWithIdResponse personWithId;
+        if(person.getPersonId() !=null) {
+        	personWithId = personClient.retrievePerson(authValues, person.getPersonId());
+        }else {
+        	personWithId = personClient.createPerson(authValues, person);
+        }
 
         addPersonToGar(gar, personWithId.getPersonId(), personType);
         garClient.updateGar(authValues, garUuid, gar);
@@ -148,6 +156,16 @@ public class PersonBusinessLogicService implements PersonService {
 
         return response;
     }
+    
+    @Override
+	public PeopleBulkResponse getBulkPeople(AuthValues authValues, List<UUID> peopleUuids) throws WorkflowException {
+    	List<PersonWithIdResponse> peopleList = personClient.getBulk(authValues, peopleUuids);
+    	PeopleBulkResponse bulkPeople = new PeopleBulkResponse();
+    	bulkPeople.setPeople(peopleList);
+    	return bulkPeople;
+	}
+
+
 
     private void removePersonFromGar(GarSkeleton gar, UUID personId) {
         PersonType type = findPersonType(gar, personId);
@@ -225,4 +243,5 @@ public class PersonBusinessLogicService implements PersonService {
 
 
     }
+	
 }

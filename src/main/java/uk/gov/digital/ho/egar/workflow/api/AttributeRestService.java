@@ -6,7 +6,6 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.Attribute;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.AttributeResponse;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URISyntaxException;
 import java.util.UUID;
 

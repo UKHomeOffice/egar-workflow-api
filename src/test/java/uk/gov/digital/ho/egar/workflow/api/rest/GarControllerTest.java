@@ -193,7 +193,7 @@ public abstract class GarControllerTest  {
 				.header(AUTH_HEADER,   AUTH))
 		.andDo(print())
 		// THEN		
-		.andExpect(status().isBadRequest());			
+		.andExpect(status().isForbidden());			
 	}
 
 
@@ -416,7 +416,8 @@ public abstract class GarControllerTest  {
 				.header(AUTH_HEADER,  AUTH)
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
 				.content(TestDependacies.fileTestData()))
-		.andExpect(status().isSeeOther());
+		.andExpect(status().isSeeOther())
+		.andReturn();
 		this.mockMvc
 		.perform(get(GAR_RETRIEVE_SERVICE_NAME.replace("{gar_uuid}", garUuid))
 				.header(USERID_HEADER, USER_UUID)
@@ -478,7 +479,7 @@ public abstract class GarControllerTest  {
 				.header(AUTH_HEADER,   AUTH))
 		.andDo(print())
 		// THEN
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	/**

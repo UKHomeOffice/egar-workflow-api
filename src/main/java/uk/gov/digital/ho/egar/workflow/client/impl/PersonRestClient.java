@@ -1,4 +1,6 @@
 package uk.gov.digital.ho.egar.workflow.client.impl;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -6,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,7 @@ import uk.gov.digital.ho.egar.workflow.model.rest.Person;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PersonWithIdResponse;
 
 import static uk.gov.digital.ho.egar.constants.ServicePathConstants.ROOT_PATH_SEPERATOR;
+import static uk.gov.digital.ho.egar.workflow.api.WorkflowApi.PATH_BULK;
 
 /**
  * Concrete Implementation of DummyPersonClientImpl
@@ -95,6 +99,26 @@ public class PersonRestClient extends RestClient<PersonClient> implements Person
 		if ( logger.isInfoEnabled()) logger.info("ResponseBody", response.getBody());
 		
 		return conversionService.convert(response.getBody(), PersonWithIdResponse.class);	
+	}
+
+	@Override
+	public List<PersonWithIdResponse> getBulk(AuthValues authValues, List<UUID> peopleUuids) throws WorkflowException {
+		logger.info("Request to retrieve list of people.");
+
+		ResponseEntity<ClientPerson[]> responseArray = doPost(authValues, PATH_BULK, peopleUuids,ClientPerson[].class  );
+		
+		if (!HttpStatus.OK.equals(responseArray.getStatusCode()))
+			throw new UnableToPerformWorkflowException(responseArray);
+		
+		List<ClientPerson> responseList = Arrays.asList(responseArray.getBody());
+
+		TypeDescriptor sourceType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(ClientPerson.class));
+		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(PersonWithIdResponse.class));
+
+		// Suppressing warning due to using type descriptor within conversion service
+		@SuppressWarnings("unchecked")
+		List<PersonWithIdResponse> result = (List<PersonWithIdResponse>) conversionService.convert(responseList,sourceType,targetType);
+		return result;
 	}
 
 

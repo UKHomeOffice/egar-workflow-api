@@ -64,12 +64,6 @@ public class WorkflowPropertiesConfig {
 	private String fileinfoApiURL;
 
 	/**
-	 * The cancellation time before arrival in milliseconds.
-	 */
-	@Value("${workflow.cancellation.cutoff.time.ms}")
-	private long cancellationCutoffTimeMs;
-
-	/**
 	 * The maximum number of files allowed
 	 */
 	@Value("${workflow.max.file.number}")
@@ -86,5 +80,33 @@ public class WorkflowPropertiesConfig {
 	 */
 	@Value("${workflow.max.file.size}")
 	private long maxFileSize;
+
+	/**
+	 * The cancellation time before departure in seconds.
+	 */
+	@Value("${workflow.cancellation.departure.threshold.time.s:#{null}}")
+	private Long cancellationDepartureThreshold;
 	
+	/**
+	 * The cancellation time before arrival in seconds.
+	 */
+	@Value("${workflow.cancellation.arrival.threshold.time.s:#{null}}")
+	private Long cancellationArrivalThreshold;
+	
+	/**
+	 * The submission time before departure in seconds.
+	 */
+	@Value("${workflow.submission.departure.cutoff.time.s:#{null}}")
+	private Long submissionDepartureCutoff;
+	
+	/**
+	 * The submission time before arrival in seconds.
+	 */
+	@Value("${workflow.submission.arrival.cutoff.time.s:#{null}}")
+	private Long submissionArrivalCutoff;
+	
+	
+	public void setArrivalCancellaionLimit(long time) {
+		this.cancellationArrivalThreshold = time;
+	}
 }

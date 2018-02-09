@@ -13,5 +13,7 @@ public interface GarChecker {
 	void checkGarExists(final GarSkeleton gar, final UUID garId) throws WorkflowException;
 
 	void checkGarIsCancellable(final AuthValues userValues, final GarSkeleton gar) throws WorkflowException;
+	
+	void checkGarIsSubmittable(final AuthValues userValues, final GarSkeleton gar) throws WorkflowException;
 
 }

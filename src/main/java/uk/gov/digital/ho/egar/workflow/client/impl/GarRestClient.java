@@ -1,5 +1,7 @@
 package uk.gov.digital.ho.egar.workflow.client.impl;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -7,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -20,11 +23,12 @@ import uk.gov.digital.ho.egar.workflow.client.GarClient;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientGar;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientGarList;
 import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.Gar;
-import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSkeleton;
 
 import static uk.gov.digital.ho.egar.constants.ServicePathConstants.ROOT_PATH_SEPERATOR;
+import static uk.gov.digital.ho.egar.workflow.api.WorkflowApi.PATH_BULK;
 
 @Component
 @Profile({"!mock-gar"})
@@ -101,9 +105,9 @@ public class GarRestClient extends RestClient<GarClient> implements GarClient {
 	 * to use the GAR straight afterwards.
 	 */
 	@Override
-	public boolean containsGar(final AuthValues authToken, UUID garUuid) throws WorkflowException {
+	public boolean containsGar(final AuthValues authValues, UUID garUuid) throws WorkflowException {
 		try {
-			Gar gar = getGar(authToken, garUuid);
+			Gar gar = getGar(authValues, garUuid);
 
 			if (gar == null)
 				return false;
@@ -117,17 +121,37 @@ public class GarRestClient extends RestClient<GarClient> implements GarClient {
 	}
 
 	@Override
-	public GarListResponse getListOfGars(final AuthValues authToken) throws WorkflowException {
+	public GarList getListOfGars(final AuthValues authValues) throws WorkflowException {
 
 		logger.info("Request to retrieve list of GARs.");
 
-		ResponseEntity<ClientGarList> response = doGet(authToken, null, ClientGarList.class);
+		ResponseEntity<ClientGarList> response = doGet(authValues, null, ClientGarList.class);
 
 		if (!HttpStatus.OK.equals(response.getStatusCode()))
 			throw new UnableToPerformWorkflowException(response);
 
 		logger.info("ResponseBody", response);
-		return conversionService.convert(response.getBody(), GarListResponse.class);
+		return conversionService.convert(response.getBody(), GarList.class);
+	}
+
+	@Override
+	public List<GarSkeleton> getBulk(AuthValues authValues, List<UUID> garUuids) throws WorkflowException {
+		logger.info("Request to retrieve list of GARs.");
+
+		ResponseEntity<ClientGar[]> responseArray = doPost(authValues, PATH_BULK, garUuids,ClientGar[].class  );
+		
+		if (!HttpStatus.OK.equals(responseArray.getStatusCode()))
+			throw new UnableToPerformWorkflowException(responseArray);
+		
+		List<ClientGar> responseList = Arrays.asList(responseArray.getBody());
+
+		TypeDescriptor sourceType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(ClientGar.class));
+		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(GarSkeleton.class));
+
+		// Suppressing warning due to using type descriptor within conversion service
+		@SuppressWarnings("unchecked")
+		List<GarSkeleton> result = (List<GarSkeleton>) conversionService.convert(responseList,sourceType,targetType);
+		return result;
 	}
 
 }

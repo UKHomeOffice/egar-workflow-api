@@ -1,0 +1,16 @@
+{
+  "details": {
+    "address": "",
+    "dob": "",
+    "document_expiryDate": "",
+    "document_issuingCountry": "",
+    "document_no": "",
+    "document_type": "",
+    "family_name": "",
+    "gender": "",
+    "given_name": "",
+    "nationality": "",
+    "place": ""
+  },
+  "type": "PASSENGER"
+}

@@ -1,6 +1,8 @@
 package uk.gov.digital.ho.egar.workflow.client.dummy;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -76,11 +78,25 @@ public class DummySubmissionClient extends DummyClient<SubmissionClient>
 		submission.getSubmission().setStatus(SubmissionStatus.CANCELLED);
 		return submission;
 	}
+	
+	@Override
+	public List<SubmissionGar> getBulk(AuthValues authValues, List<UUID> submissionUuids) {
+
+		List<SubmissionGar> submissions = new ArrayList<>();
+		for(UUID submissionUuid: submissionUuids){
+			DummyKey key = new DummyKey(submissionUuid,authValues.getUserUuid());
+	    	SubmissionGar submission = dummySubmissionRepo.get(key);
+	    	
+	    	submissions.add(submission);
+	    	}
+		
+		return submissions;
+	}
 
 	private SubmissionGar add(final SubmissionGar submission) {
 		dummySubmissionRepo.put(new DummyKey(submission.getSubmission().getSubmissionUuid(),submission.getUserUuid()), submission);
 		return submission;
 	}
-	
+
 
 }

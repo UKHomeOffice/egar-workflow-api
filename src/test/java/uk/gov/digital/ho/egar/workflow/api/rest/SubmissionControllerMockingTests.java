@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 										+ "mock-submission,"
 										+ "mock-aircraft,"
 										+ "mock-attribute ",
-		"workflow.cancellation.cutoff.time.ms=7200000"
+		"workflow.submission.arrival.cutoff.time.s=-10800"
 })
 @AutoConfigureMockMvc
 public class SubmissionControllerMockingTests extends SubmissionControllerTest{

@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import javax.annotation.PostConstruct;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +24,20 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import uk.co.civica.microservice.util.testing.utils.ConditionalIgnoreRule;
 import uk.gov.digital.ho.egar.workflow.WorkflowApplication;
+import uk.gov.digital.ho.egar.workflow.client.FileClient;
+import uk.gov.digital.ho.egar.workflow.client.SubmissionClient;
+import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileClientImpl;
+import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileInfoClientImpl;
+import uk.gov.digital.ho.egar.workflow.client.dummy.DummySubmissionClient;
+import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
+import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
+import uk.gov.digital.ho.egar.workflow.service.behaviour.GarCheck;
+import uk.gov.digital.ho.egar.workflow.service.impl.SubmissionBusinessLogicService;
+import uk.gov.digital.ho.egar.workflow.client.SubmissionClient;
+import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileInfoClientImpl;
+import uk.gov.digital.ho.egar.workflow.client.dummy.DummySubmissionClient;
+import uk.gov.digital.ho.egar.workflow.service.behaviour.GarCheck;
+import uk.gov.digital.ho.egar.workflow.service.impl.SubmissionBusinessLogicService;
 
 import static uk.co.civica.microservice.util.testing.matcher.RegExConstants.REGEX_UUID;
 import static uk.co.civica.microservice.util.testing.matcher.RegexMatcher.matchesRegex;
@@ -54,12 +69,25 @@ public abstract class SubmissionControllerTest {//
 	private WorkflowApplication app;
 	@Autowired
 	private MockMvc mockMvc;
+	@Autowired
+	private SubmissionClient submissionClient;
+	@Autowired 
+	private FileClient fileClient; 
+	@Autowired
+	private WorkflowPropertiesConfig config;
 
 	private TestDependacies retriever;
 
 	@PostConstruct
 	private void init() {
 		retriever = new TestDependacies(mockMvc);
+	}
+	
+	@Before
+	public void setup(){
+		final long time = -7200;
+		setArrivalCancellationLimit(time);
+		setFileStatus(FileStatus.AWAITING_VIRUS_SCAN);
 	}
 
 	@Test
@@ -273,6 +301,7 @@ public abstract class SubmissionControllerTest {//
 	public void submitGar() throws Exception {
 		// WITH
 		final String garUuid = retriever.createAGar(USER_UUID, AUTH);
+		setFileStatus(FileStatus.VIRUS_SCANNED);
 		// WHEN
 		// ADD Aircraft
 		this.mockMvc
@@ -316,6 +345,14 @@ public abstract class SubmissionControllerTest {//
 						.contentType(APPLICATION_JSON_UTF8_VALUE)
 						.content(TestDependacies.attributeTestData()))
 				.andExpect(status().isSeeOther());
+		// ADD File
+		this.mockMvc
+		.perform(post(FILE_SERVICE_NAME.replace("{gar_uuid}", garUuid))
+				.header(USERID_HEADER, USER_UUID)
+				.header(AUTH_HEADER,  AUTH)
+				.contentType(APPLICATION_JSON_UTF8_VALUE)
+				.content(TestDependacies.fileTestData()))
+		.andExpect(status().isSeeOther());
 		// SUBMIT
 		this.mockMvc
 				.perform(post(SUBMISSION_SERVICE_NAME.replace("{gar_uuid}", garUuid))
@@ -343,7 +380,7 @@ public abstract class SubmissionControllerTest {//
 						.header(EMAIL_HEADER, EMAIL)
 						.contentType(APPLICATION_JSON_UTF8_VALUE))
 				// THEN
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isForbidden());
 	}
 
 	@Ignore
@@ -391,11 +428,11 @@ public abstract class SubmissionControllerTest {//
 						.header(EMAIL_HEADER, EMAIL)
 						.contentType(APPLICATION_JSON_UTF8_VALUE))
 				// THEN
-				.andExpect(status().isBadRequest());
+				.andExpect(status().isForbidden());
 	}
 
 	@Test
-	public void postCancelWhenGarIsNotSubmitted() throws Exception {
+	public void badRequestCancelWhenGarIsNotSubmitted() throws Exception {
 		// WITH
 		final String garUuid = retriever.createAGar(USER_UUID, AUTH);
 		// WHEN
@@ -409,11 +446,12 @@ public abstract class SubmissionControllerTest {//
 				.andExpect(status().isBadRequest());
 
 	}
-
+@Ignore
 	@Test
-	public void postCancelSubmissionWithArrivalInPast() throws Exception{
+	public void forbiddenCancelSubmissionWithinArrivalAfterThreshold() throws Exception{
 		// WITH
 		final String garUuid = retriever.createAGar(USER_UUID, AUTH);
+		setArrivalCancellationLimit(-18000);
 		// WHEN
 		// ADD Aircraft
 		this.mockMvc
@@ -424,7 +462,7 @@ public abstract class SubmissionControllerTest {//
 						.content(TestDependacies.aircraftTestData()))
 				.andExpect(status().isSeeOther());
 		// ADD Arrival
-		String arrivalData = TestDependacies.arrivalTestData(ZonedDateTime.now().minusMinutes(20));
+		String arrivalData = TestDependacies.arrivalTestData(ZonedDateTime.now().plusHours(4));
 		this.mockMvc
 				.perform(post(LOCATION_SERVICE_NAME.replace("{gar_uuid}", garUuid).replace("{option}", "arr"))
 						.header(USERID_HEADER, USER_UUID)
@@ -478,7 +516,7 @@ public abstract class SubmissionControllerTest {//
 	}
 
 	@Test
-	public void postCancelSubmissionWithinArrivalInThreshold() throws Exception{
+	public void successCancelSubmissionInBeforeThreshold() throws Exception {
 		// WITH
 		final String garUuid = retriever.createAGar(USER_UUID, AUTH);
 		// WHEN
@@ -491,7 +529,7 @@ public abstract class SubmissionControllerTest {//
 						.content(TestDependacies.aircraftTestData()))
 				.andExpect(status().isSeeOther());
 		// ADD Arrival
-		String arrivalData = TestDependacies.arrivalTestData(ZonedDateTime.now().plusHours(1));
+		String arrivalData = TestDependacies.arrivalTestData(ZonedDateTime.now().plusHours(4));
 		this.mockMvc
 				.perform(post(LOCATION_SERVICE_NAME.replace("{gar_uuid}", garUuid).replace("{option}", "arr"))
 						.header(USERID_HEADER, USER_UUID)
@@ -529,92 +567,14 @@ public abstract class SubmissionControllerTest {//
 						.header(USERID_HEADER, USER_UUID)
 						.header(AUTH_HEADER, AUTH)
 						.header(EMAIL_HEADER, EMAIL))
-				.andExpect(status().isSeeOther())
-				.andExpect(header().string("Location", not(isNull())))
-				.andExpect(header().string("Location", SUBMISSION_SERVICE_NAME.replace("{gar_uuid}", garUuid)))
-		;
-		// CANCEL SUBMIT
-		this.mockMvc
-				.perform(delete(SUBMISSION_SERVICE_NAME.replace("{gar_uuid}", garUuid))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER, AUTH)
-						.header(EMAIL_HEADER, EMAIL)
-						.contentType(APPLICATION_JSON_UTF8_VALUE))
-				// THEN
-				.andExpect(status().isForbidden());
-	}
-
-	@Test
-	public void postCancelSubmissionSuccess() throws Exception {
-		// WITH
-		final String garUuid = retriever.createAGar(USER_UUID, AUTH);
-		// WHEN
-		// ADD Aircraft
-		this.mockMvc
-				.perform(post(AIRCRAFT_SERVICE_NAME.replace("{gar_uuid}", garUuid))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER, AUTH)
-						.contentType(APPLICATION_JSON_UTF8_VALUE)
-						.content(TestDependacies.aircraftTestData()))
-				.andExpect(status().isSeeOther());
-		// ADD Arrival
-		String arrivalData = TestDependacies.arrivalTestData(ZonedDateTime.now().plusDays(1));
-		this.mockMvc
-				.perform(post(LOCATION_SERVICE_NAME.replace("{gar_uuid}", garUuid).replace("{option}", "arr"))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER, AUTH)
-						.contentType(APPLICATION_JSON_UTF8_VALUE)
-						.content(arrivalData))
-				.andExpect(status().isSeeOther());
-		// ADD Departure
-		this.mockMvc
-				.perform(post(LOCATION_SERVICE_NAME.replace("{gar_uuid}", garUuid).replace("{option}", "dept"))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER, AUTH)
-						.contentType(APPLICATION_JSON_UTF8_VALUE)
-						.content(TestDependacies.departureTestData(ICAO)))
-				.andExpect(status().isSeeOther());
-		// ADD Captain
-		this.mockMvc
-				.perform(post(PERSON_SERVICE_NAME.replace("{gar_uuid}", garUuid))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER,   AUTH)
-						.contentType(APPLICATION_JSON_UTF8_VALUE)
-						.content(TestDependacies.personTestData(CAPTAIN)))
-				.andExpect(status().isSeeOther());
-		// ADD Attributes
-		this.mockMvc
-				.perform(post(ATTRIBUTE_SERVICE_NAME.replace("{gar_uuid}", garUuid))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER,   AUTH)
-						.contentType(APPLICATION_JSON_UTF8_VALUE)
-						.content(TestDependacies.attributeTestData()))
-				.andExpect(status().isSeeOther());
-		// SUBMIT
-		this.mockMvc
-				.perform(post(SUBMISSION_SERVICE_NAME.replace("{gar_uuid}", garUuid))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER, AUTH)
-						.header(EMAIL_HEADER, EMAIL))
-				.andExpect(status().isSeeOther())
-				.andExpect(header().string("Location", not(isNull())))
-				.andExpect(header().string("Location", SUBMISSION_SERVICE_NAME.replace("{gar_uuid}", garUuid)))
-		;
-		// CANCEL SUBMIT
-		this.mockMvc
-				.perform(delete(SUBMISSION_SERVICE_NAME.replace("{gar_uuid}", garUuid))
-						.header(USERID_HEADER, USER_UUID)
-						.header(AUTH_HEADER, AUTH)
-						.header(EMAIL_HEADER, EMAIL)
-						.contentType(APPLICATION_JSON_UTF8_VALUE))
-				// THEN
 				.andExpect(status().isSeeOther())
 				.andExpect(header().string("Location", not(isNull())))
 				.andExpect(header().string("Location", SUBMISSION_SERVICE_NAME.replace("{gar_uuid}", garUuid)));
 	}
-
+	
+	
 	@Test
-	public void postCancelSubmissionWhenAlreadyCancelled() throws Exception {
+	public void forbiddenCancelSubmissionWhenAlreadyCancelled() throws Exception {
 		// WITH
 		final String garUuid = retriever.createAGar(USER_UUID, AUTH);
 		// WHEN
@@ -627,7 +587,7 @@ public abstract class SubmissionControllerTest {//
 						.content(TestDependacies.aircraftTestData()))
 				.andExpect(status().isSeeOther());
 		// ADD Arrival
-		String arrivalData = TestDependacies.arrivalTestData(ZonedDateTime.now().plusDays(1));
+		String arrivalData = TestDependacies.arrivalTestData(ZonedDateTime.now().plusHours(4));
 		this.mockMvc
 				.perform(post(LOCATION_SERVICE_NAME.replace("{gar_uuid}", garUuid).replace("{option}", "arr"))
 						.header(USERID_HEADER, USER_UUID)
@@ -754,4 +714,17 @@ public abstract class SubmissionControllerTest {//
 					// THEN
 					.andExpect(status().isForbidden());
 	  } 
+	
+	private void setArrivalCancellationLimit(long time){
+		if (submissionClient instanceof DummySubmissionClient){
+			config.setArrivalCancellaionLimit(time);
+		}
+	}
+	
+		
+	private void setFileStatus(FileStatus fileStatus) {
+		if (fileClient instanceof DummyFileClientImpl) {
+			((DummyFileClientImpl)fileClient).setFileStatus(fileStatus);
+		}
+	}
 }

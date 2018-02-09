@@ -4,6 +4,38 @@
 To run the service create an application.properties file in the same folder as the spring jar. Additionally as this is a SpringBoot application the values can be stored as systems environment properties. See [Springboot documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html) for full details.
 As a short hand through out this document these are refered to as *parameters*.
 
+## Configuring Submission cutoff times
+There are two optional submission cutoff parameters:
+```
+workflow.submission.departure.cutoff.time.s={time}
+workflow.submission.arrival.cutoff.time.s={time}
+```
+In both cases these parameters default to null. The submission cutoff time can be set to a positive or negative number and is in seconds. A positive number indicates a threshold after the location and a negative indicates a threshold before the threshold.
+E.g. 
+```
+--workflow.submission.departure.cutoff.time.s=-7200
+```
+This would give a submission threshold of two hours before departure. 
+## Configuring cancellation thresholds
+There are two optional cancellation parameters that are configurable:
+```
+--workflow.cancellation.departure.threshold.time.s={time}
+--workflow.cancellation.arrival.threshold.time.s={time}
+```
+In both cases these parameters default to null. The cancellation time can be set to a positive or negative number and is in seconds. A positive number indicates a threshold after the location and a negative indicates a threshold before the threshold.
+E.g. 
+```
+--workflow.cancellation.departure.threshold.time.s=-7200
+```
+This would give a cancellation threshold of two hours before departure. 
+##  Configuring file parameters
+All three file parameters need to be set:
+```
+--workflow.max.file.number={max_file_number}
+--workflow.max.total.file.size={tot_size}
+--workflow.max.file.size={size}
+```
+The file sizes are measured in bytes.
 ## Setting the server's port
 
 By default the service runs by default on port 9090. But to change this, add to the configuration the following:

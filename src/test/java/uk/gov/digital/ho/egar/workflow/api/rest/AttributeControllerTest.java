@@ -2,7 +2,6 @@ package uk.gov.digital.ho.egar.workflow.api.rest;
 
 import static com.jayway.jsonassert.JsonAssert.with;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertEquals;
@@ -292,7 +291,7 @@ public abstract class AttributeControllerTest {
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
 				.content(TestDependacies.attributeTestData()))
 		// THEN		
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	@Ignore // TODO When Authentication added

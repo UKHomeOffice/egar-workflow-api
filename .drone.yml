@@ -9,12 +9,6 @@ pipeline:
     secrets: [ access_key, access_key_id ]
     commands:
       - ./build-deploy.sh
-  notify_slack:
-    image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
-    channel: builds
-    when:
-      status: [success, failure]
   deploy_docker_image:
     image: docker:17.09.0-ce
     secrets:
@@ -28,3 +22,9 @@ pipeline:
       - apk update
       - apk add libxml2-utils
       - ./docker-deploy.sh egar-workflow-api
+  notify_slack:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/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
+    channel: builds
+    when:
+      status: [success, failure]

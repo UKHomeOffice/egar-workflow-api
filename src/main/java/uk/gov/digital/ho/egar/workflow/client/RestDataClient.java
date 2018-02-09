@@ -10,7 +10,13 @@ import org.springframework.web.client.RestTemplate;
  */
 public interface RestDataClient<T extends DataClient<?>> extends DataClient<T> {
 
+	/**
+	 * @return A URL for the service with no serverlet context.
+	 */
 	URL getBaseEndpointUrl();
+	/**
+	 * @return The configured URL URL of the server for this service.
+	 */
 	URL getEndpointServerRootUrl();
 	RestTemplate getRestTemplate();
 	

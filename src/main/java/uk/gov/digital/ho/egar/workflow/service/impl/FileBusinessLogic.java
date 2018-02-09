@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.egar.workflow.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,21 +58,29 @@ public class FileBusinessLogic implements FileService {
         garChecker.checkGarIsAmendable(authValues, gar);
 
         List<UUID> fileUuids = gar.getFileIds();
-
+        if (fileUuids == null) {
+        	fileUuids = new ArrayList<UUID>();
+        }
+    
+        FileWithIdResponse fileWithId = null;
+        	
         FileInformation fileInformation = fileInfoClient.retrieveFileInformation(authValues, fileDetails);
-        long fileSize = fileInformation.getFileSize();
-
+        long fileSize = 0;
+        
+        if(fileInformation.getFileSize() != 0) fileSize =fileInformation.getFileSize();
+        
         fileChecker.checkNumberOfFiles(fileUuids);
         fileChecker.checkIndividualFileSize(fileSize);
         fileChecker.checkMaxSizeOfTotalFiles(authValues, fileUuids, fileSize);
-
-        FileWithIdResponse fileWithId = fileClient.uploadFileInformation(authValues, fileInformation);
+        
+        fileWithId = fileClient.uploadFileInformation(authValues, fileInformation);
 
         fileUuids.add(fileWithId.getFileUuid());
-
+        gar.setFileIds(fileUuids);
+        
         garClient.updateGar(authValues, gar.getGarUuid(), gar);
 
-        return fileWithId.getFileUuid();
+        return fileWithId ==null ?null : fileWithId.getFileUuid();
     }
 
 

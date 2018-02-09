@@ -1,5 +1,7 @@
 package uk.gov.digital.ho.egar.workflow.client.impl;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSummary;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.SubmissionGar;
 import static uk.gov.digital.ho.egar.constants.ServicePathConstants.ROOT_PATH_SEPERATOR;
+import static uk.gov.digital.ho.egar.workflow.api.WorkflowApi.PATH_BULK;
 
 @Component
 @Profile({"!mock-submission"})
@@ -83,6 +86,18 @@ public class SubmissionRestClient extends RestClient<SubmissionClient> implement
 			throw new UnableToPerformWorkflowException (response);
 
 		return response.getBody();
+	}
+
+	@Override
+	public List<SubmissionGar> getBulk(AuthValues authValues, List<UUID> submissionUuids) throws WorkflowException {
+		logger.info("Request to retrieve list of people.");
+
+		ResponseEntity<SubmissionGar[]> responseArray = doPost(authValues, PATH_BULK, submissionUuids,SubmissionGar[].class  );
+		
+		if (!HttpStatus.OK.equals(responseArray.getStatusCode()))
+			throw new UnableToPerformWorkflowException(responseArray);
+		
+		return Arrays.asList(responseArray.getBody());
 	}
 
 

@@ -95,7 +95,7 @@ public abstract class LocationControllerTest {
 		assertThat(locationResponse).isNotNull();
 		assertThat(locationResponse.has("location")).isTrue();
 		assertEquals(locationResponse.get("location").get("ICAO").asText(), 	("EBBT"));
-		assertEquals(locationResponse.get("location").get("datetime").asText(), ("2017-10-21T10:15:30Z"));
+		assertEquals(locationResponse.get("location").get("datetime").asText(), ("2018-10-21T10:15:30Z"));
 
 	}	
 	//----------------------------------------
@@ -157,7 +157,7 @@ public abstract class LocationControllerTest {
 				.header(AUTH_HEADER,   AUTH))
 		.andDo(print())
 		// THEN		
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	@Ignore // TODO When Authentication added
@@ -435,7 +435,7 @@ public abstract class LocationControllerTest {
 				.header(AUTH_HEADER,   AUTH))
 		.andDo(print())
 		// THEN	
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	@Ignore // TODO When Authentication added
@@ -485,7 +485,7 @@ public abstract class LocationControllerTest {
 				.header(AUTH_HEADER,   AUTH))
 		.andDo(print())
 		// THEN		
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	@Ignore // TODO When Authentication added
@@ -583,7 +583,7 @@ public abstract class LocationControllerTest {
 		assertThat(locationResponse).isNotNull();
 		assertThat(locationResponse.has("location")).isTrue();
 		assertEquals(locationResponse.get("location").get("ICAO").asText(), 					("EBBT"));
-		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2017-10-21T10:15:30Z"));
+		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2018-10-21T10:15:30Z"));
 	}
 	@Test
 	public void addingDeptIataLocation() throws Exception{
@@ -615,7 +615,7 @@ public abstract class LocationControllerTest {
 		assertThat(locationResponse).isNotNull();
 		assertThat(locationResponse.has("location")).isTrue();
 		assertEquals(locationResponse.get("location").get("IATA").asText(), 					("BRS"));
-		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2017-10-21T10:15:30Z"));
+		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2018-10-21T10:15:30Z"));
 	}
 	
 	@Test
@@ -664,7 +664,7 @@ public abstract class LocationControllerTest {
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
 				.content(TestDependacies.departureTestData(ICAO)))
 		// THEN
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	@Ignore // TODO When Authentication added
@@ -727,7 +727,7 @@ public abstract class LocationControllerTest {
 		assertThat(locationResponse).isNotNull();
 		assertThat(locationResponse.has("location")).isTrue();
 		assertEquals(locationResponse.get("location").get("ICAO").asText(), 					("EBBT"));
-		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2017-10-21T10:15:30Z"));
+		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2018-10-21T10:15:30Z"));
 		// WHEN
 		this.mockMvc
 		.perform(post(deptLocationUri)
@@ -744,7 +744,7 @@ public abstract class LocationControllerTest {
 		assertThat(amendedLocationResponse).isNotNull();
 		assertThat(amendedLocationResponse.has("location")).isTrue();
 		assertEquals(amendedLocationResponse.get("location").get("ICAO").asText(), 		("null"));
-		assertEquals(amendedLocationResponse.get("location").get("datetime").asText(), 	("2017-10-21T10:15:30Z"));
+		assertEquals(amendedLocationResponse.get("location").get("datetime").asText(), 	("2018-10-21T10:15:30Z"));
 		assertEquals(amendedLocationResponse.get("location").get("IATA").asText(), 	("BRS"));
 	}
 	/*
@@ -783,7 +783,7 @@ public abstract class LocationControllerTest {
 		assertThat(locationResponse).isNotNull();
 		assertThat(locationResponse.has("location")).isTrue();
 		assertEquals(locationResponse.get("location").get("ICAO").asText(), 	("EBBA"));
-		assertEquals(locationResponse.get("location").get("datetime").asText(), ("2017-10-21T12:15:30Z"));
+		assertEquals(locationResponse.get("location").get("datetime").asText(), ("2018-10-21T12:15:30Z"));
 	}	
 	@Test
 	public void addingArrIataLocation() throws Exception{
@@ -815,7 +815,7 @@ public abstract class LocationControllerTest {
 		assertThat(locationResponse).isNotNull();
 		assertThat(locationResponse.has("location")).isTrue();
 		assertEquals(locationResponse.get("location").get("IATA").asText(), 					("BHX"));
-		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2017-10-21T12:15:30Z"));
+		assertEquals(locationResponse.get("location").get("datetime").asText(), 				("2018-10-21T12:15:30Z"));
 	}
 	
 	@Test
@@ -860,7 +860,7 @@ public abstract class LocationControllerTest {
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
 				.content(TestDependacies.arrivalTestData(ICAO)))
 		// THEN
-		.andExpect(status().isBadRequest());
+		.andExpect(status().isForbidden());
 	}
 
 	@Ignore // TODO When Authentication added
@@ -916,7 +916,7 @@ public abstract class LocationControllerTest {
 		assertThat(locationResponse).isNotNull();
 		assertThat(locationResponse.has("location")).isTrue();
 		assertEquals(locationResponse.get("location").get("ICAO").asText(), 	("EBBA"));
-		assertEquals(locationResponse.get("location").get("datetime").asText(), ("2017-10-21T12:15:30Z"));
+		assertEquals(locationResponse.get("location").get("datetime").asText(), ("2018-10-21T12:15:30Z"));
 		// WHEN
 		this.mockMvc
 		.perform(post(LOCATION_SERVICE_NAME.replace("{gar_uuid}", garUuid)
@@ -935,7 +935,7 @@ public abstract class LocationControllerTest {
 		assertThat(amendedLocationResponse).isNotNull();
 		assertThat(amendedLocationResponse.has("location")).isTrue();
 		assertEquals(amendedLocationResponse.get("location").get("ICAO").asText(), 		("null"));
-		assertEquals(amendedLocationResponse.get("location").get("datetime").asText(), 	("2017-10-21T12:15:30Z"));
+		assertEquals(amendedLocationResponse.get("location").get("datetime").asText(), 	("2018-10-21T12:15:30Z"));
 		assertEquals(amendedLocationResponse.get("location").get("IATA").asText(), 		("BHX"));
 	}
 

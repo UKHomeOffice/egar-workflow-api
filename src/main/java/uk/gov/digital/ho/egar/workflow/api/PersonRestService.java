@@ -3,6 +3,7 @@ package uk.gov.digital.ho.egar.workflow.api;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.Person;
+import uk.gov.digital.ho.egar.workflow.model.rest.PersonWithId;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PeopleSkeletonResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PersonResponse;
 
@@ -29,7 +30,7 @@ public interface PersonRestService {
      * @return The response
      * @throws WorkflowException when there is an issue performing this step of the process.
      */
-    ResponseEntity<Void> addNewPerson(final String authToken, final UUID uuidOfUser, final UUID garId, final Person person) throws WorkflowException;
+    ResponseEntity<Void> addNewPerson(final String authToken, final UUID uuidOfUser, final UUID garId, final PersonWithId person) throws WorkflowException;
 
     /**
      * Updates the person for an existing general aviation report.
@@ -57,4 +58,5 @@ public interface PersonRestService {
      * @throws WorkflowException 
      */
     ResponseEntity<Void> deletePerson(final String authToken, final UUID uuidOfUser, final UUID garId, final UUID personId) throws WorkflowException;
+
 }

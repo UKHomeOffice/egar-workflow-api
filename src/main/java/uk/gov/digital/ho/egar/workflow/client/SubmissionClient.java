@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.egar.workflow.client;
 
+import java.util.List;
 import java.util.UUID;
 
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
@@ -17,4 +18,6 @@ public interface SubmissionClient  extends DataClient<SubmissionClient> {
 	boolean containsSubmission(final AuthValues authValues, final UUID submissionUuid) throws WorkflowException;
 
     SubmissionGar cancel(final UserValues userValues, final UUID submissionUuid) throws WorkflowException;
+
+	List<SubmissionGar> getBulk(final AuthValues authValues,final  List<UUID> submissionUuids) throws WorkflowException;
 }

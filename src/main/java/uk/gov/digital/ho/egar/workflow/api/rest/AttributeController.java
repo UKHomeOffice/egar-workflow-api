@@ -27,7 +27,6 @@ import uk.gov.digital.ho.egar.workflow.model.rest.response.AttributeResponse;
 import uk.gov.digital.ho.egar.workflow.service.AttributeService;
 import uk.gov.digital.ho.egar.workflow.utils.UriLocationUtilities;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;

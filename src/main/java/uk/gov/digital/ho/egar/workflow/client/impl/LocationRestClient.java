@@ -1,6 +1,9 @@
 package uk.gov.digital.ho.egar.workflow.client.impl;
 import static uk.gov.digital.ho.egar.constants.ServicePathConstants.ROOT_PATH_SEPERATOR;
+import static uk.gov.digital.ho.egar.workflow.api.WorkflowApi.PATH_BULK;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -8,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -103,6 +107,26 @@ public class LocationRestClient extends RestClient<LocationClient> implements Lo
 		
 		LOG.info("ResponseBody", response);
 		return conversionService.convert(response.getBody(), LocationWithId.class);
+	}
+
+	@Override
+	public List<LocationWithId> getBulk(AuthValues authValues, List<UUID> locationUuids) throws WorkflowException {
+		LOG.info("Request to retrieve list of people.");
+
+		ResponseEntity<ClientLocation[]> responseArray = doPost(authValues, PATH_BULK, locationUuids,ClientLocation[].class  );
+		
+		if (!HttpStatus.OK.equals(responseArray.getStatusCode()))
+			throw new UnableToPerformWorkflowException(responseArray);
+		
+		List<ClientLocation> responseList = Arrays.asList(responseArray.getBody());
+
+		TypeDescriptor sourceType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(ClientLocation.class));
+		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(LocationWithId.class));
+
+		// Suppressing warning due to using type descriptor within conversion service
+		@SuppressWarnings("unchecked")
+		List<LocationWithId> result = (List<LocationWithId>) conversionService.convert(responseList,sourceType,targetType);
+		return result;
 	}
 
 

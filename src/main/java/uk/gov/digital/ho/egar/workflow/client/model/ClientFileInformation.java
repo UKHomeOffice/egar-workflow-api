@@ -1,7 +1,5 @@
 package uk.gov.digital.ho.egar.workflow.client.model;
 
-import java.util.UUID;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
