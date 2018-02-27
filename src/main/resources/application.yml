@@ -82,5 +82,7 @@ workflow:
     fileinfo:
       api:
         url: http://localhost:8086/api/v1/FileDetails/
-
+    solr:
+      api:
+        url: http://localhost:8983/solr
     

@@ -3,20 +3,26 @@
  */
 package uk.gov.digital.ho.egar.workflow.service.impl;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.LocationNotFoundWorkflowException;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.GarClient;
+import uk.gov.digital.ho.egar.workflow.client.GarSearchClient;
 import uk.gov.digital.ho.egar.workflow.client.LocationClient;
+import uk.gov.digital.ho.egar.workflow.model.rest.GarSearchDetails;
 import uk.gov.digital.ho.egar.workflow.model.rest.Location;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.*;
 import uk.gov.digital.ho.egar.workflow.service.LocationService;
 import uk.gov.digital.ho.egar.workflow.service.behaviour.GarChecker;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -38,6 +44,9 @@ public class LocationBusinessLogicService implements LocationService {
 
     @Autowired
     private ConversionService conversionService;
+    
+    @Autowired
+    private GarSearchClient garSearchClient;
 
     @Override
     public LocationListResponse retrieveAllLocations(final AuthValues authValues, UUID garUuid) throws WorkflowException {
@@ -53,7 +62,7 @@ public class LocationBusinessLogicService implements LocationService {
     }
 
     @Override
-    public UUID updateDepartureLocation(final AuthValues authValues, UUID garUuid, Location location) throws WorkflowException {
+    public UUID updateDepartureLocation(final AuthValues authValues, UUID garUuid, Location location) throws WorkflowException, RestClientException, URISyntaxException, SolrServerException, IOException {
         
         GarSkeleton gar = garClient.getGar(authValues, garUuid);
         
@@ -71,7 +80,13 @@ public class LocationBusinessLogicService implements LocationService {
 
             garClient.updateGar(authValues, gar.getGarUuid(), gar);
         }
-
+        // Add gar details to index
+        GarSearchDetails garDetails = GarSearchDetails.builder()
+        											  .departureLocation(location)
+        											  .garUuid(garUuid)
+        											  .build();
+        garSearchClient.addGarToIndex(authValues, garDetails, true, false);
+        
         return locationWithId.getLocationId();
     }
 

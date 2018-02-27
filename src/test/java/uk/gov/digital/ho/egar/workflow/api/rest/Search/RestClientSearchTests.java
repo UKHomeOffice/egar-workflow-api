@@ -6,15 +6,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import uk.co.civica.microservice.util.testing.utils.IgnoreWhenNoRestClients;
 import uk.co.civica.microservice.util.testing.utils.ConditionalIgnoreRule.ConditionalIgnore;
+import uk.co.civica.microservice.util.testing.utils.IgnoreWhenNoRestClients;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties
 		={
 				"eureka.client.enabled=false",
 				"spring.cloud.config.discovery.enabled=false",
-				"spring.profiles.active=dev,"
+				"test.userest=true",
+				"spring.profiles.active="
+										+ "mock-gar,"
 										+ "mock-location,"
 										+ "mock-person,"
 										+ "mock-file,"

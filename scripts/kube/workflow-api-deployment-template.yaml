@@ -26,7 +26,12 @@ spec:
         - --workflow.egar.aircraft.api.url=http://$(AIRCRAFT_API_SERVICE_HOST):$(AIRCRAFT_API_SERVICE_PORT)/api/v1/aircraft/
         - --workflow.egar.file.api.url=http://$(FILES_API_SERVICE_HOST):$(FILES_API_SERVICE_PORT)/api/v1/Files/
         - --workflow.egar.fileinfo.api.url=http://$(FILES_API_SERVICE_HOST):$(FILES_API_SERVICE_PORT)/api/v1/FileDetails
+        - --workflow.egar.solr.api.url=http://$(SOLR_CONFIG_SERVICE_HOST):$(SOLR_CONFIG_SERVICE_PORT)/solr
         - --spring.profiles.active=mock-attribute
+        - --egar.gar.search.core=egar-gar-search
+        - --egar.people.search.core=egar-people-search
+        - --workflow.max.total.file.size=52428800
+        - --workflow.max.file.size=10485760
         image: pipe.egarteam.co.uk/egar-workflow-api:$WORKFLOW_API_VER
         name: workflow-api
         livenessProbe:

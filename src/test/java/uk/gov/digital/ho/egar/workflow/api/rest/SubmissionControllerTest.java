@@ -27,18 +27,9 @@ import uk.gov.digital.ho.egar.workflow.WorkflowApplication;
 import uk.gov.digital.ho.egar.workflow.client.FileClient;
 import uk.gov.digital.ho.egar.workflow.client.SubmissionClient;
 import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileClientImpl;
-import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileInfoClientImpl;
 import uk.gov.digital.ho.egar.workflow.client.dummy.DummySubmissionClient;
 import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
-import uk.gov.digital.ho.egar.workflow.service.behaviour.GarCheck;
-import uk.gov.digital.ho.egar.workflow.service.impl.SubmissionBusinessLogicService;
-import uk.gov.digital.ho.egar.workflow.client.SubmissionClient;
-import uk.gov.digital.ho.egar.workflow.client.dummy.DummyFileInfoClientImpl;
-import uk.gov.digital.ho.egar.workflow.client.dummy.DummySubmissionClient;
-import uk.gov.digital.ho.egar.workflow.service.behaviour.GarCheck;
-import uk.gov.digital.ho.egar.workflow.service.impl.SubmissionBusinessLogicService;
-
 import static uk.co.civica.microservice.util.testing.matcher.RegExConstants.REGEX_UUID;
 import static uk.co.civica.microservice.util.testing.matcher.RegexMatcher.matchesRegex;
 import static uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies.AIRCRAFT_SERVICE_NAME;

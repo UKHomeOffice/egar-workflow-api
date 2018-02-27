@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 										+ "mock-file,"
 										+ "mock-submission,"
 										+ "mock-aircraft,"
+										+ "mock-gar-search,"
 										+ "mock-attribute ",
 		"workflow.submission.arrival.cutoff.time.s=-10800"
 })

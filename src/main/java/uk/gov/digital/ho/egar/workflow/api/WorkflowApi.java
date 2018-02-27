@@ -43,12 +43,19 @@ public interface WorkflowApi {
 
     public static final String PATH_CANCEL_SUBMISSION = "cancellation";
     
-    public static final String PATH_BULK = "Summaries";
+    public static final String PATH_BULK = "summaries";
     
-    public static final String SEARCH_PERSON_SERVICE_NAME =  ServicePathConstants.ROOT_PATH_SEPERATOR + "Persons" 
-    														+ServicePathConstants.ROOT_PATH_SEPERATOR;
+    public static final String PATH_SEARCH = "search";
+    
+    public static final String ROOT_PATH_SEARCH = ROOT_PATH +  ServicePathConstants.ROOT_PATH_SEPERATOR + PATH_SEARCH;
+    
+    public static final String SEARCH_PERSON_SERVICE_NAME =  ServicePathConstants.ROOT_PATH_SEPERATOR  + "persons" 
+    														+ ServicePathConstants.ROOT_PATH_SEPERATOR;
+    
     public static final String SEARCH_GAR_SERVICE_NAME = 	 ServicePathConstants.ROOT_PATH_SEPERATOR + "GARs" 
-															+ServicePathConstants.ROOT_PATH_SEPERATOR;
-   
-    public static final String PATH_BULK_PERSON = ROOT_PATH + SEARCH_PERSON_SERVICE_NAME + PATH_BULK;
+															+ ServicePathConstants.ROOT_PATH_SEPERATOR;
+    
+    public static final String ROOT_PATH_BULK =  ROOT_PATH +  ServicePathConstants.ROOT_PATH_SEPERATOR + PATH_BULK;
+    
+    public static final String PATH_BULK_PERSON = ServicePathConstants.ROOT_PATH_SEPERATOR + "persons" + ServicePathConstants.ROOT_PATH_SEPERATOR ;
 }

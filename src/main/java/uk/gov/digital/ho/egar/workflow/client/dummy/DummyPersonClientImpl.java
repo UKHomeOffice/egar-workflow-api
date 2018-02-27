@@ -12,7 +12,7 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.PersonClient;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientPerson;
 import uk.gov.digital.ho.egar.workflow.model.rest.Person;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonListRequest;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonUUIDList;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.PersonWithIdResponse;
 
 import java.util.*;
@@ -83,7 +83,7 @@ public class DummyPersonClientImpl extends DummyClient<PersonClient>
     	return people;
 	}
     
-	public PersonListRequest getPeople(AuthValues authValues) {
+	public PersonUUIDList getPeople(AuthValues authValues) {
 		
 		Iterator<Entry<DummyKey, ClientPerson>> iterator = dummyPersonRepo.entrySet().iterator();
 		List<UUID> people =  new ArrayList<>(); 
@@ -93,7 +93,7 @@ public class DummyPersonClientImpl extends DummyClient<PersonClient>
 				people.add(entry.getKey().getKeyUuid());
 			}
 		}
-		PersonListRequest listOfPeople = new PersonListRequest();
+		PersonUUIDList listOfPeople = new PersonUUIDList();
 		listOfPeople.setPersonUuids(people);
 		
     	return listOfPeople;

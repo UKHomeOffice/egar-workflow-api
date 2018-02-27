@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 										+ "mock-person,"
 										+ "mock-file,"
 										+ "mock-submission,"
+										+ "mock-gar-search,"
 										+ "mock-aircraft"
 })
 @AutoConfigureMockMvc

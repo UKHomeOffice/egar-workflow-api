@@ -5,12 +5,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.AircraftRestService;
@@ -24,7 +26,9 @@ import uk.gov.digital.ho.egar.workflow.utils.UriLocationUtilities;
 
 import static uk.gov.digital.ho.egar.workflow.api.WorkflowApiUriParameter.GAR_IDENTIFIER;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 /**
@@ -71,7 +75,7 @@ public class AircraftController implements AircraftRestService
     public ResponseEntity<Void> createAircraft(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
     		@RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser,
     		@PathVariable(value = GAR_IDENTIFIER) final UUID garId,
-    		@RequestBody final Aircraft aircraft) throws WorkflowException {
+    		@RequestBody final Aircraft aircraft) throws WorkflowException, RestClientException, URISyntaxException, SolrServerException, IOException {
 
         aircraftService.createAircraft(new AuthValues(authToken, uuidOfUser),garId, aircraft);
 

@@ -40,7 +40,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonListRequest;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonUUIDList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties
@@ -97,13 +97,13 @@ public class BulkPeopleTests {
 			
 		}
 		
-		PersonListRequest people = new PersonListRequest();
+		PersonUUIDList people = new PersonUUIDList();
 		people.setPersonUuids(peopleList);
 
 		String simpleJSON = mapper.writeValueAsString(people);
 
 		this.mockMvc
-		.perform(post("/api/v1/WF/Persons/Summaries")
+		.perform(post("/api/v1/WF/summaries/persons/")
 				.header(USERID_HEADER, USER_UUID)
 				.header(AUTH_HEADER, AUTH)
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -165,12 +165,12 @@ public class BulkPeopleTests {
 			peopleList.add(UUID.fromString(uuid));
 			
 		}
-		PersonListRequest people = new PersonListRequest();
+		PersonUUIDList people = new PersonUUIDList();
 		people.setPersonUuids(peopleList);
 
 		String simpleJSON = mapper.writeValueAsString(people);
 		this.mockMvc
-		.perform(post("/api/v1/WF/Persons/Summaries")
+		.perform(post("/api/v1/WF/summaries/persons/")
 				.header(USERID_HEADER, USER_UUID)
 				.header(AUTH_HEADER, AUTH)
 				.contentType(APPLICATION_JSON_UTF8_VALUE)

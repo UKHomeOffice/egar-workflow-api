@@ -23,8 +23,8 @@ import uk.gov.digital.ho.egar.workflow.client.GarClient;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientGar;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientGarList;
 import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.Gar;
+import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSkeleton;
 
 import static uk.gov.digital.ho.egar.constants.ServicePathConstants.ROOT_PATH_SEPERATOR;
@@ -121,7 +121,7 @@ public class GarRestClient extends RestClient<GarClient> implements GarClient {
 	}
 
 	@Override
-	public GarList getListOfGars(final AuthValues authValues) throws WorkflowException {
+	public GarListResponse getListOfGars(final AuthValues authValues) throws WorkflowException {
 
 		logger.info("Request to retrieve list of GARs.");
 
@@ -131,7 +131,7 @@ public class GarRestClient extends RestClient<GarClient> implements GarClient {
 			throw new UnableToPerformWorkflowException(response);
 
 		logger.info("ResponseBody", response);
-		return conversionService.convert(response.getBody(), GarList.class);
+		return conversionService.convert(response.getBody(), GarListResponse.class);
 	}
 
 	@Override

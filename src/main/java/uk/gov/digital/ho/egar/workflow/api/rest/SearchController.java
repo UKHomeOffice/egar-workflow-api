@@ -20,12 +20,13 @@ import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.SearchRestService;
 import uk.gov.digital.ho.egar.workflow.api.WorkflowApi;
 import uk.gov.digital.ho.egar.workflow.api.WorkflowApiResponse;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonListRequest;
+import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonUUIDList;
+import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 import uk.gov.digital.ho.egar.workflow.service.SearchService;
 
 @RestController
-@RequestMapping(WorkflowApi.ROOT_PATH)
+@RequestMapping(WorkflowApi.ROOT_PATH_SEARCH)
 @Api(consumes = MediaType.APPLICATION_JSON_VALUE,
 	 produces = MediaType.APPLICATION_JSON_VALUE)
 public class SearchController implements SearchRestService {
@@ -42,13 +43,13 @@ public class SearchController implements SearchRestService {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, 
 						 message = WorkflowApiResponse.SWAGGER_MESSAGE_SUCCESSFUL_RETRIEVED_KEY,
-						 response = PersonListRequest.class),
+						 response = PersonUUIDList.class),
 			@ApiResponse(code = 400, message = WorkflowApiResponse.SWAGGER_MESSAGE_NOT_FOUND)})
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(path = WorkflowApi.SEARCH_PERSON_SERVICE_NAME)
-	public PersonListRequest listOfExistingPeople(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
+	public PersonUUIDList listOfExistingPeople(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
 										   @RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser, 
-										   @RequestParam(value = "search_criteria",required = false) String searchCriteria){
+										   @RequestParam(value = "search_criteria",required = false) String searchCriteria) throws WorkflowException{
 
 		return searchService.searchPeople(new AuthValues(authToken, uuidOfUser),searchCriteria);
 	}
@@ -58,15 +59,17 @@ public class SearchController implements SearchRestService {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, 
 						 message = WorkflowApiResponse.SWAGGER_MESSAGE_SUCCESSFUL_RETRIEVED_KEY,
-						 response = GarList.class),
+						 response = GarListResponse.class),
 			@ApiResponse(code = 400, message = WorkflowApiResponse.SWAGGER_MESSAGE_NOT_FOUND)})
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(path = WorkflowApi.SEARCH_GAR_SERVICE_NAME)
-	public GarList listOfExistingGars(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
+	public GarListResponse listOfExistingGars(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
 											  @RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser, 
-											  @RequestParam(value = "search_criteria",required = false) String searchCriteria){
+											  @RequestParam(value = "search_criteria",required = false) String searchCriteria) throws WorkflowException{
 
 		return searchService.searchGars(new AuthValues(authToken, uuidOfUser),searchCriteria);
 	}
 
 }
+
+

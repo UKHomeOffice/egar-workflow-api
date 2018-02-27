@@ -53,6 +53,8 @@ public class TestDependacies {
 	public static final String PERSON_SERVICE_NAME     				= "/api/v1/WF/GARs/{gar_uuid}/persons/";
 	public static final String ATTRIBUTE_SERVICE_NAME  				= "/api/v1/WF/GARs/{gar_uuid}/attributes/";
 	public static final String FILE_SERVICE_NAME					= "/api/v1/WF/GARs/{gar_uuid}/files/";
+	public static final String SEARCH_SERVICE_NAME 					= "/api/v1/WF/search/";
+	public static final String BULK_SERVICE_NAME 					= "/api/v1/WF/summaries/";
 	
 	private final MockMvc mockMvc ;
 	
@@ -364,6 +366,10 @@ public class TestDependacies {
 	}
 	public final static String fileTestData(String type) throws IOException{
 		String data = "data/FileTestData/{type}FileTestData.json".replace("{type}",	type);
+		return  readFileAsString(data);
+	}
+	public final static String searchTestData(String type) throws IOException{
+		String data = "data/SearchTestData/{type}TestData.json".replace("{type}",	type);
 		return  readFileAsString(data);
 	}
 	

@@ -1,8 +1,13 @@
 package uk.gov.digital.ho.egar.workflow.api;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestClientException;
+
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.Location;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.LocationListResponse;
@@ -29,9 +34,13 @@ public interface LocationRestService {
      * @param location The location to add
      * @return The response
      * @throws WorkflowException 
+	 * @throws IOException 
+	 * @throws SolrServerException 
+	 * @throws URISyntaxException 
+	 * @throws RestClientException 
      */
 	ResponseEntity<Void> updateDepartureLocation(final String authToken, final UUID uuidOfUser, UUID garId, Location location)
-			throws WorkflowException;
+			throws WorkflowException, RestClientException, URISyntaxException, SolrServerException, IOException;
 	/**
      * Adds or amends arrival Location to an existing general aviation report
      * @param garId The gar uuid.

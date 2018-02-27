@@ -7,7 +7,7 @@ import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.DataNotFoundWorkflowException;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarBulkSummaryResponse;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
+import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSkeleton;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSummary;
 
@@ -44,7 +44,7 @@ public interface GarService {
      * Retrieves a list of existing gars.
      * @return The gar list
      */
-    GarList getAllGars(final AuthValues authValues)throws WorkflowException;
+    GarListResponse getAllGars(final AuthValues authValues)throws WorkflowException;
 
     /**
      * Bulk retrieves Gars in summary format

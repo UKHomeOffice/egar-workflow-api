@@ -30,6 +30,7 @@ import uk.co.civica.microservice.util.testing.utils.ConditionalIgnoreRule.Condit
 										+ "mock-person,"
 										+ "mock-file,"
 										+ "mock-aircraft,"
+										+ "mock-gar-search,"
 										+ "mock-attribute ",
 		"workflow.cancellation.arrival.threshold.time.s=7200",
 		"workflow.submission.arrival.cutoff.time.s=-10800"
@@ -46,7 +47,6 @@ public class SubmissionControllerRestClientTests extends SubmissionControllerTes
 	{
 		URL submissionServerApi = new URL(workflowUrlConfig.getSubmissionApiURL());
 		URL submissionServerHealth = new URL(submissionServerApi,"/health");
-		
 		HttpURLConnection connection ;
 		
 		try {

@@ -71,7 +71,7 @@ public class SubmissionRestClient extends RestClient<SubmissionClient> implement
 	@Override
 	public boolean containsSubmission(AuthValues authValues, UUID submissionUuid) throws WorkflowException {
 		try {
-			return getSubmission( authValues, submissionUuid).getSubmission().equals(submissionUuid);
+			return getSubmission( authValues, submissionUuid).getSubmission().getSubmissionUuid().equals(submissionUuid);
 		} catch (SubmissionNotFoundWorkflowException e) {
 			if ( logger.isInfoEnabled()) logger.info("Submission UUID not found");
 			return false;

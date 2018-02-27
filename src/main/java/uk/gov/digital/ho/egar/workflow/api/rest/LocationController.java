@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.LocationRestService;
@@ -25,7 +27,9 @@ import uk.gov.digital.ho.egar.workflow.service.LocationService;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.LocationListResponse;
 import uk.gov.digital.ho.egar.workflow.utils.UriLocationUtilities;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.egar.workflow.api.WorkflowApiUriParameter.GAR_IDENTIFIER;
@@ -70,6 +74,10 @@ public class LocationController implements LocationRestService {
 	
 	/**
 	 * ----------------------------------------------------------------------------------------------
+	 * @throws IOException 
+	 * @throws SolrServerException 
+	 * @throws URISyntaxException 
+	 * @throws RestClientException 
 	 */
 	@Override
 	@ApiOperation(value = "Add/amend the departure location for a GAR.",
@@ -93,7 +101,7 @@ public class LocationController implements LocationRestService {
     		@RequestHeader(AuthValues.USERID_HEADER) 	UUID uuidOfUser,
     		@PathVariable(value = GAR_IDENTIFIER) 		UUID garId, 
     		@RequestBody 								Location location) 
-    				throws WorkflowException {
+    				throws WorkflowException, RestClientException, URISyntaxException, SolrServerException, IOException {
 		
         UUID locationUuid = locationService.updateDepartureLocation(new AuthValues(authToken, uuidOfUser), garId, location);
 

@@ -6,10 +6,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.FileInfoClient;
-import uk.gov.digital.ho.egar.workflow.client.model.ClientFileStatus;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileDetails;
 import uk.gov.digital.ho.egar.workflow.model.rest.FileInformation;
-import uk.gov.digital.ho.egar.workflow.model.rest.FileStatus;
 
 
 @Component

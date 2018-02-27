@@ -2,6 +2,8 @@ package uk.gov.digital.ho.egar.workflow.api.rest;
 
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +24,7 @@ import uk.gov.digital.ho.egar.workflow.api.WorkflowApi;
 import uk.gov.digital.ho.egar.workflow.api.WorkflowApiResponse;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PeopleBulkResponse;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonListRequest;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonUUIDList;
 import uk.gov.digital.ho.egar.workflow.service.PersonService;
 
 /**
@@ -30,9 +32,10 @@ import uk.gov.digital.ho.egar.workflow.service.PersonService;
  *  general aviation report.
  */
 @RestController
-@RequestMapping(WorkflowApi.PATH_BULK_PERSON)
-@Api(value = WorkflowApi.PATH_BULK_PERSON, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(WorkflowApi.ROOT_PATH_BULK)
+@Api(value = WorkflowApi.ROOT_PATH_BULK, produces = MediaType.APPLICATION_JSON_VALUE)
 public class BulkPersonController implements BulkPersonRestService {
+	private static Log logger = LogFactory.getLog(BulkPersonController.class); 
     /**
      * The person service.
      */
@@ -57,12 +60,17 @@ public class BulkPersonController implements BulkPersonRestService {
     })
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
+    @PostMapping( path = WorkflowApi.PATH_BULK_PERSON,
+    		    consumes = MediaType.APPLICATION_JSON_VALUE,
            		produces = MediaType.APPLICATION_JSON_VALUE)
     public PeopleBulkResponse bulkRetrievePeople(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
     									 @RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser, 
-    									 @RequestBody PersonListRequest peopleUuids) throws WorkflowException{
+    									 @RequestBody PersonUUIDList peopleUuids) throws WorkflowException{
+    	logger.info("Bulk request of people");
+    	logger.info("Uuid of requesting person: "+ uuidOfUser!=null?uuidOfUser.toString(): "Uuid of user is null");
     	
+    	logger.info("Number of uuids in request list: "+ 
+    			peopleUuids!=null && peopleUuids.getPersonUuids() != null ? peopleUuids.getPersonUuids().size(): " peopleUuids or list of uuids in request null" );
     	return personService.getBulkPeople(new AuthValues(authToken, uuidOfUser),peopleUuids.getPersonUuids());
     }
 

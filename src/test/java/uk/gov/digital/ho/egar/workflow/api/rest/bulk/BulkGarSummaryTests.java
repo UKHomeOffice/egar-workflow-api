@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.co.civica.microservice.util.testing.utils.ConditionalIgnoreRule;
 import uk.gov.digital.ho.egar.workflow.api.rest.TestDependacies;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
+import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 
 public abstract class BulkGarSummaryTests {
 	
@@ -106,13 +106,13 @@ public abstract class BulkGarSummaryTests {
 			.andExpect(status().isSeeOther());
 		}
 		
-		GarList gars = new GarList();
+		GarListResponse gars = new GarListResponse();
 		gars.setGarIds(garList);
 		
 		String simpleJSON = mapper.writeValueAsString(gars);
 		
 		this.mockMvc
-		.perform(post(GAR_SERVICE_NAME + "Summaries")
+		.perform(post(GAR_SERVICE_NAME + "summaries")
 				.header(USERID_HEADER, USER_UUID)
 				.header(AUTH_HEADER, AUTH)
 				.contentType(APPLICATION_JSON_UTF8_VALUE)
@@ -143,11 +143,11 @@ public abstract class BulkGarSummaryTests {
 			
 			garList.add(UUID.fromString(garUuid));
 		}
-		GarList gars = new GarList();
+		GarListResponse gars = new GarListResponse();
 		gars.setGarIds(garList);
 		String simpleJSON = mapper.writeValueAsString(gars);
 		this.mockMvc
-		.perform(post(GAR_SERVICE_NAME + "Summaries")
+		.perform(post(GAR_SERVICE_NAME + "summaries")
 				.header(USERID_HEADER, USER_UUID)
 				.header(AUTH_HEADER, AUTH)
 				.contentType(APPLICATION_JSON_UTF8_VALUE)

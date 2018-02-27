@@ -12,7 +12,10 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.CaptainAlreadyExistsWorkfl
 import uk.gov.digital.ho.egar.workflow.api.exceptions.PersonNotFoundWorkflowException;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.GarClient;
+import uk.gov.digital.ho.egar.workflow.client.PeopleSearchClient;
 import uk.gov.digital.ho.egar.workflow.client.PersonClient;
+import uk.gov.digital.ho.egar.workflow.client.impl.PersonSearchRestClient;
+import uk.gov.digital.ho.egar.workflow.model.rest.PeopleSearchDetails;
 import uk.gov.digital.ho.egar.workflow.model.rest.Person;
 import uk.gov.digital.ho.egar.workflow.model.rest.PersonType;
 import uk.gov.digital.ho.egar.workflow.model.rest.PersonWithId;
@@ -40,6 +43,9 @@ public class PersonBusinessLogicService implements PersonService {
     @Autowired
     private GarChecker behaviourChecker;
 
+	@Autowired
+	private PeopleSearchClient personSearchClient;
+    
     @Autowired
     private ConversionService conversionService;
 
@@ -80,6 +86,14 @@ public class PersonBusinessLogicService implements PersonService {
 
         addPersonToGar(gar, personWithId.getPersonId(), personType);
         garClient.updateGar(authValues, garUuid, gar);
+        
+        // ADD HOOK TO SEARCH
+    	PeopleSearchDetails peopleSearchDetails = PeopleSearchDetails.builder()
+    			.forename(personWithId.getPersonDetails().getGivenName())
+    			.lastname(personWithId.getPersonDetails().getFamilyName())
+    			.personUuid(personWithId.getPersonId())
+    			.build();
+     	personSearchClient.addPersonToIndex(authValues, peopleSearchDetails);
 
 
         return personWithId.getPersonId();
@@ -114,6 +128,14 @@ public class PersonBusinessLogicService implements PersonService {
         }
 
         garClient.updateGar(authValues, garUuid, gar);
+        
+        // ADD HOOK TO SEARCH
+    	PeopleSearchDetails peopleSearchDetails = PeopleSearchDetails.builder()
+    			.forename(personWithId.getPersonDetails().getGivenName())
+    			.lastname(personWithId.getPersonDetails().getFamilyName())
+    			.personUuid(personId)
+    			.build();
+     	personSearchClient.addPersonToIndex(authValues, peopleSearchDetails);
 
         return personWithId.getPersonId();
     }
@@ -153,7 +175,7 @@ public class PersonBusinessLogicService implements PersonService {
         response.setPerson(personWithId);
         response.setGarUuid(garUuid);
         response.setUserUuid(gar.getUserUuid());
-
+        
         return response;
     }
     

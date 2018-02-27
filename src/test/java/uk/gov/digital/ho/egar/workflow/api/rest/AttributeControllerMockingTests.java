@@ -16,7 +16,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 										+ "mock-person,"
 										+ "mock-file,"
 										+ "mock-submission,"
-										+ "mock-aircraft"
+										+ "mock-aircraft,"
+										+ "mock-gar-search"
 })
 @AutoConfigureMockMvc
 public class AttributeControllerMockingTests extends AttributeControllerTest {

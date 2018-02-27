@@ -1,25 +1,33 @@
 package uk.gov.digital.ho.egar.workflow.api;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonListRequest;
+import org.apache.solr.client.solrj.SolrServerException;
+
+import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonUUIDList;
+import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 
 public interface SearchRestService {
 
 	/**
 	 * Search for existing people for User.
 	 * @param
+	 * @throws IOException 
+	 * @throws SolrServerException 
 	 * @throws URISyntaxException 
 	 */
-	PersonListRequest listOfExistingPeople(final String authToken, final UUID uuidOfUser, final String searchCriteria);
+	PersonUUIDList listOfExistingPeople(final String authToken, final UUID uuidOfUser, final String searchCriteria) throws WorkflowException;
 
 	/**
 	 * Search list of existing gars for User.
 	 * @param
+	 * @throws IOException 
+	 * @throws SolrServerException 
 	 * @throws URISyntaxException 
 	 */
-	GarList listOfExistingGars(final String authToken, final UUID uuidOfUser, final String searchCriteria);
+	GarListResponse listOfExistingGars(final String authToken, final UUID uuidOfUser, final String searchCriteria) throws WorkflowException;
 
 }

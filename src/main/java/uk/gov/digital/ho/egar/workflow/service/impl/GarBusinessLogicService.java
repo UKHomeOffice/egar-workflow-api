@@ -13,7 +13,6 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.*;
 import uk.gov.digital.ho.egar.workflow.model.rest.PersonType;
 import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarBulkSummaryResponse;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.*;
 import uk.gov.digital.ho.egar.workflow.service.GarService;
 import uk.gov.digital.ho.egar.workflow.service.behaviour.GarChecker;
@@ -139,7 +138,7 @@ public class GarBusinessLogicService implements GarService {
 	}
 
 	@Override
-	public GarList getAllGars(final AuthValues authValues)throws WorkflowException {
+	public GarListResponse getAllGars(final AuthValues authValues)throws WorkflowException {
 		//No business logic required.
 		return garClient.getListOfGars(authValues);
 	}

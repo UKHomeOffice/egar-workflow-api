@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PeopleBulkResponse;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonListRequest;
+import uk.gov.digital.ho.egar.workflow.model.rest.bulk.PersonUUIDList;
 
 public interface BulkPersonRestService {
 
@@ -16,6 +16,6 @@ public interface BulkPersonRestService {
      * @return list of people details
      * @throws WorkflowException
      */
-	PeopleBulkResponse bulkRetrievePeople(final String authToken, final UUID uuidOfUser, final PersonListRequest peopleList) throws WorkflowException;
+	PeopleBulkResponse bulkRetrievePeople(final String authToken, final UUID uuidOfUser, final PersonUUIDList peopleList) throws WorkflowException;
 
 }

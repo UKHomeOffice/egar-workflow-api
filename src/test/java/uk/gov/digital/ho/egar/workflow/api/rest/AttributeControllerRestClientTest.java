@@ -30,7 +30,8 @@ import uk.gov.digital.ho.egar.workflow.config.WorkflowPropertiesConfig;
 										+ "mock-person,"
 										+ "mock-file,"
 										+ "mock-submission,"
-										+ "mock-aircraft"
+										+ "mock-aircraft,"
+										+ "mock-gar-search"
 })
 @AutoConfigureMockMvc
 @ConditionalIgnore( condition = IgnoreWhenNoRestClients.class )

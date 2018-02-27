@@ -11,7 +11,7 @@ import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.client.GarClient;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientGar;
 import uk.gov.digital.ho.egar.workflow.client.model.ClientGarList;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
+import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSkeleton;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +82,7 @@ public class DummyGarClientImpl extends DummyClient<GarClient>
     }
 
     @Override
-    public GarList getListOfGars(final AuthValues authValues) {
+    public GarListResponse getListOfGars(final AuthValues authValues) {
         
     	ClientGarList clientResponse = new ClientGarList();
         
@@ -97,7 +97,7 @@ public class DummyGarClientImpl extends DummyClient<GarClient>
         
         clientResponse.setGarIds(garIds);
 
-        return conversionService.convert(clientResponse, GarList.class);
+        return conversionService.convert(clientResponse, GarListResponse.class);
     }
     
     @Override

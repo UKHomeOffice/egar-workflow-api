@@ -20,7 +20,7 @@ import uk.gov.digital.ho.egar.workflow.api.WorkflowApiResponse;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.GarNotFoundWorkflowException;
 import uk.gov.digital.ho.egar.workflow.api.exceptions.WorkflowException;
 import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarBulkSummaryResponse;
-import uk.gov.digital.ho.egar.workflow.model.rest.bulk.GarList;
+import uk.gov.digital.ho.egar.workflow.model.rest.response.GarListResponse;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSkeleton;
 import uk.gov.digital.ho.egar.workflow.model.rest.response.GarSummary;
 import uk.gov.digital.ho.egar.workflow.service.GarService;
@@ -65,19 +65,19 @@ public class GarController implements GarRestService {
      */
     @ApiOperation(value = "Retrieve all existing GARs.",
             notes = "Retrieve a list of all General Aviation Reports for a user",
-            response = GarList.class)
+            response = GarListResponse.class)
     @ApiResponses(value = {
             @ApiResponse(
                     code = 200,
                     message = WorkflowApiResponse.SWAGGER_MESSAGE_SUCCESSFUL_RETRIEVED_KEY,
-                    response = GarList.class),
+                    response = GarListResponse.class),
             @ApiResponse(
                     code = 401,
                     message = WorkflowApiResponse.SWAGGER_MESSAGE_UNAUTHORISED)
     })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public GarList getListOfGars(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
+    public GarListResponse getListOfGars(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
     									 @RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser) throws WorkflowException{
     	LOGGER.debug("Retrieving a list of GARs linked to user");
         return garService.getAllGars(new AuthValues(authToken, uuidOfUser)); 
@@ -197,10 +197,10 @@ public class GarController implements GarRestService {
     			consumes = MediaType.APPLICATION_JSON_VALUE,
            		produces = MediaType.APPLICATION_JSON_VALUE)
     public GarBulkSummaryResponse bulkRetrieveGARs(@RequestHeader(AuthValues.AUTH_HEADER) String authToken,
-    									   @RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser, 
-    									   @RequestBody GarList garList) throws WorkflowException{
+    									   		   @RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser, 
+    									   		   @RequestBody GarListResponse garList) throws WorkflowException{
     	
-    	return garService.getBulkGars(new AuthValues(authToken, uuidOfUser),garList.getGarIds());
+    	return garService.getBulkGars(new AuthValues(authToken, uuidOfUser), garList.getGarIds());
     }
     
 }

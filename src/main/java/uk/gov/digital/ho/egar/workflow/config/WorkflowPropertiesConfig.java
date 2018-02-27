@@ -105,8 +105,20 @@ public class WorkflowPropertiesConfig {
 	@Value("${workflow.submission.arrival.cutoff.time.s:#{null}}")
 	private Long submissionArrivalCutoff;
 	
+
+	/**
+	 * Endpoint to get People Solr Url.
+	 */
+	@Value("${workflow.egar.solr.api.url}")
+	private String solrApiUrl;
 	
 	public void setArrivalCancellaionLimit(long time) {
 		this.cancellationArrivalThreshold = time;
 	}
+	
+	/**
+	 * Endpoint to get SolrApi.
+	 */
+	@Value("${workflow.egar.solr.api.url}")
+	private String getSolrApiUrl;
 }

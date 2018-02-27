@@ -46,6 +46,12 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.solr/solr-solrj -->
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>6.6.0</version>
+		</dependency>
 
 		<!-- + + TESTING + -->
 		<dependency>
@@ -183,5 +189,5 @@
 
 	<name>eGAR Workflow API application</name>
 	<description>The workflow API which is consumed by the website.</description>
-	<version>4.3.0-SNAPSHOT</version>
+	<version>5.0.5-SNAPSHOT</version>
 </project>
