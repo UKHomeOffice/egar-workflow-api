@@ -10,7 +10,7 @@ There are two optional submission cutoff parameters:
 workflow.submission.departure.cutoff.time.s={time}
 workflow.submission.arrival.cutoff.time.s={time}
 ```
-In both cases these parameters default to null. The submission cutoff time can be set to a positive or negative number and is in seconds. A positive number indicates a threshold after the location and a negative indicates a threshold before the threshold.
+In both cases these parameters default to null.. The submission cutoff time can be set to a positive or negative number and is in seconds. A positive number indicates a threshold after the location and a negative indicates a threshold before the threshold.
 E.g. 
 ```
 --workflow.submission.departure.cutoff.time.s=-7200
