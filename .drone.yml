@@ -9,22 +9,24 @@ pipeline:
     secrets: [ access_key, access_key_id ]
     commands:
       - ./build-deploy.sh
-  deploy_docker_image:
-    image: docker:17.09.0-ce
-    secrets:
-      - docker_password
-    privileged: false
+
+  sonar-scanner:
+    image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.1
     when:
-      branch: [master, develop]
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    commands:
-      - apk update
-      - apk add libxml2-utils
-      - ./docker-deploy.sh egar-workflow-api
-  notify_slack:
-    image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
-    channel: builds
-    when:
-      status: [success, failure]
+      event:
+        - push
+        - pull_request
+
+#  deploy_docker_image:
+#    image: docker:17.09.0-ce
+#    secrets:
+#      - docker_password
+#    privileged: false
+#    when:
+#      branch: [master, develop]
+#    environment:
+#      - DOCKER_HOST=tcp://172.17.0.1:2375
+#    commands:
+#      - apk update
+#      - apk add libxml2-utils
+#      - ./docker-deploy.sh egar-workflow-api
